@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>559</width>
-    <height>202</height>
+    <height>231</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,6 +17,9 @@
    <bool>true</bool>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetFixedSize</enum>
+   </property>
    <item>
     <layout class="QFormLayout" name="formLayout">
      <property name="labelAlignment">
@@ -335,16 +338,6 @@
     </layout>
    </item>
   </layout>
-  <zorder>layoutWidget</zorder>
-  <zorder>layoutWidget</zorder>
-  <zorder>label_3</zorder>
-  <zorder>lineEdit_key</zorder>
-  <zorder>label_4</zorder>
-  <zorder>comboBox_mode</zorder>
-  <zorder>label_5</zorder>
-  <zorder>comboBox_scrambler</zorder>
-  <zorder>checkBox</zorder>
-  <zorder>checkBox</zorder>
   <zorder>verticalSpacer</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
