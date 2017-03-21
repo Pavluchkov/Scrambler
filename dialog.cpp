@@ -2,8 +2,6 @@
 #include "ui_dialog.h"
 #include "QFileDialog"
 #include "QMessageBox"
-#include "QTextStream"
-#include "QVector"
 
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
@@ -62,13 +60,6 @@ void Dialog::on_pushButton_Ok_clicked()
     if(m == "Шифрование")
         mode = true;
 
-    if(fileName.isEmpty()){
-        QMessageBox::warning(0, "Warning",
-                             (mode)? "Выберите шифруемый файл!":"Выберите дешифруемый файл!");
-        return;
-    }
-
-
     if (!file.open(QIODevice::ReadOnly)){
         QMessageBox::critical(0, "Error", "Ошибка открытия файла !");
         return;
@@ -78,12 +69,6 @@ void Dialog::on_pushButton_Ok_clicked()
     file.close();
 
     fileName = ui->lineEdit_Save->text();
-
-    if(fileName.isEmpty()){
-        QMessageBox::warning(0, "Warning",
-                             (mode)? "Укажите куда шифровать файл!":"Укажите куда дешифровать файл!");
-        return;
-    }
 
     file.setFileName(fileName);
     if (!file.open(QIODevice::WriteOnly)){
