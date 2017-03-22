@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "SMBIOS.h"
 
 const char* LocateStringA (const char* str, UINT i)
@@ -141,7 +140,7 @@ bool ProcCacheInfo (void* p, std::vector<std::string> &v)
 
 bool ProcOEMString (void* p, std::vector<std::string> &v)
 {
-	PSMBIOSHEADER pHdr = (PSMBIOSHEADER)p;
+//	PSMBIOSHEADER pHdr = (PSMBIOSHEADER)p;
 	const char *str = toPointString (p);
 
 	v.push_back ("OEM String: " + toString (LocateString (str, *(((char*)p) + 4))));
@@ -173,7 +172,7 @@ bool ProcMemoryDevice (void* p, std::vector<std::string> &v)
 bool ProcMemoryArrayMappedAddress (void*	p, std::vector<std::string> &v)
 {
 	PMemoryArrayMappedAddress pMAMA = (PMemoryArrayMappedAddress)p;
-	const char *str = toPointString (p);
+//	const char *str = toPointString (p);
 
 	v.push_back ("Starting Address: 0x" + toString ((UINT)pMAMA->Starting));
 	v.push_back ("Ending Address: 0x" + toString ((UINT)pMAMA->Ending));

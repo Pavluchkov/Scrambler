@@ -1,8 +1,9 @@
-
 #ifndef H_SMBIOS
 #define H_SMBIOS
 
-#include "stdafx.h"
+#include <windows.h>
+#include <vector>
+#include <sstream>
 
 #pragma pack(push) 
 #pragma pack(1)
