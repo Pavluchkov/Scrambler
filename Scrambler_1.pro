@@ -26,10 +26,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         dialog.cpp \
     smbios.cpp\
-    license.cpp
+    license.cpp \
+    stdafx.cpp
 
 HEADERS  += dialog.h \
     smbios.h\
-    license.h
+    license.h \
+    stdafx.h
 
 FORMS    += dialog.ui
