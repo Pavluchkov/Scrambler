@@ -35,13 +35,13 @@ bool ProcBIOSInfo (void* p, std::vector<std::string> &v)
 	const char *str = toPointString (p);
 
 
-	v.push_back ("œÓÒÚ‡‚˘ËÍ: " + toString (LocateString (str, pBIOS->Vendor)));
-	v.push_back ("¬ÂÒËˇ: " + toString (LocateString (str, pBIOS->Version)));
-	v.push_back ("ƒ‡Ú‡ ‚˚ÔÛÒÍ‡: " + toString (LocateString (str, pBIOS->ReleaseDate)));
-	v.push_back ("–‡ÁÏÂ: " + toString ((((pBIOS->ROMSize) + 1) * 64)) + " K");
+	v.push_back ("–ü–æ—Å—Ç–∞–≤—â–∏–∫: " + toString (LocateString (str, pBIOS->Vendor)));
+	v.push_back ("–í–µ—Ä—Å–∏—è: " + toString (LocateString (str, pBIOS->Version)));
+	v.push_back ("–î–∞—Ç–∞ –≤—ã–ø—É—Å–∫–∞: " + toString (LocateString (str, pBIOS->ReleaseDate)));
+	v.push_back ("–†–∞–∑–º–µ—Ä: " + toString ((((pBIOS->ROMSize) + 1) * 64)) + " K");
 	if (pBIOS->Header.Length > 0x14) {   // for spec v2.4 and later
-		v.push_back ("¬ÂÒËˇ ÒËÒÚÂÏ˚ BIOS: " + toString ((UINT)pBIOS->MajorRelease) + "." + toString ((UINT)pBIOS->MinorRelease));
-		v.push_back ("¬ÂÒËˇ EC Firmware: " + toString ((UINT)pBIOS->ECFirmwareMajor) + "." + toString ((UINT)pBIOS->ECFirmwareMinor));
+		v.push_back ("–í–µ—Ä—Å–∏—è —Å–∏—Å—Ç–µ–º—ã BIOS: " + toString ((UINT)pBIOS->MajorRelease) + "." + toString ((UINT)pBIOS->MinorRelease));
+		v.push_back ("–í–µ—Ä—Å–∏—è EC Firmware: " + toString ((UINT)pBIOS->ECFirmwareMajor) + "." + toString ((UINT)pBIOS->ECFirmwareMinor));
 	}
 
 	return true;
@@ -52,15 +52,15 @@ bool ProcSysInfo (void* p, std::vector<std::string> &v)
 	PSystemInfo pSystem = (PSystemInfo)p;
 	const char *str = toPointString (p);
 
-	v.push_back ("œÓËÁ‚Ó‰ËÚÂÎ¸: " + toString (LocateString (str, pSystem->Manufacturer)));
-	v.push_back ("Õ‡ËÏÂÌÓ‚‡ÌËÂ ÔÓ‰ÛÍÚ‡: " + toString (LocateString (str, pSystem->ProductName)));
-	v.push_back ("¬ÂÒËˇ: " + toString (LocateString (str, pSystem->Version)));
-	v.push_back ("—ÂËÈÌ˚È ÌÓÏÂ: " + toString (LocateString (str, pSystem->SN)));
+	v.push_back ("–ü—Ä–æ–∏–∑–≤–æ–¥–∏—Ç–µ–ª—å: " + toString (LocateString (str, pSystem->Manufacturer)));
+	v.push_back ("–ù–∞–∏–º–µ–Ω–æ–≤–∞–Ω–∏–µ –ø—Ä–æ–¥—É–∫—Ç–∞: " + toString (LocateString (str, pSystem->ProductName)));
+	v.push_back ("–í–µ—Ä—Å–∏—è: " + toString (LocateString (str, pSystem->Version)));
+	v.push_back ("–°–µ—Ä–∏–π–Ω—ã–π –Ω–æ–º–µ—Ä: " + toString (LocateString (str, pSystem->SN)));
 
 	if (pSystem->Header.Length > 0x19) {
 		// fileds for spec. 2.4
-		v.push_back ("ÕÓÏÂ SKU: " + toString (LocateString (str, pSystem->SKUNumber)));
-		v.push_back ("—ÂÏÂÈÒÚ‚Ó: " + toString (LocateString (str, pSystem->Family)));
+		v.push_back ("–ù–æ–º–µ—Ä SKU: " + toString (LocateString (str, pSystem->SKUNumber)));
+		v.push_back ("–°–µ–º–µ–π—Å—Ç–≤–æ: " + toString (LocateString (str, pSystem->Family)));
 	}
 
 	return true;
@@ -71,14 +71,14 @@ bool ProcBoardInfo (void* p, std::vector<std::string> &v)
 	PBoardInfo pBoard = (PBoardInfo)p;
 	const char *str = toPointString (p);
 
-	v.push_back ("œÓËÁ‚Ó‰ËÚÂÎ¸: " + toString (LocateString (str, pBoard->Manufacturer)));
-	v.push_back ("Õ‡ËÏÂÌÓ‚‡ÌËÂ ÔÓ‰ÛÍÚ‡: " + toString (LocateString (str, pBoard->Product)));
-	v.push_back ("¬ÂÒËˇ: " + toString (LocateString (str, pBoard->Version)));
-	v.push_back ("—ÂËÈÌ˚È ÌÓÏÂ: " + toString (LocateString (str, pBoard->SN)));
+	v.push_back ("–ü—Ä–æ–∏–∑–≤–æ–¥–∏—Ç–µ–ª—å: " + toString (LocateString (str, pBoard->Manufacturer)));
+	v.push_back ("–ù–∞–∏–º–µ–Ω–æ–≤–∞–Ω–∏–µ –ø—Ä–æ–¥—É–∫—Ç–∞: " + toString (LocateString (str, pBoard->Product)));
+	v.push_back ("–í–µ—Ä—Å–∏—è: " + toString (LocateString (str, pBoard->Version)));
+	v.push_back ("–°–µ—Ä–∏–π–Ω—ã–π –Ω–æ–º–µ—Ä: " + toString (LocateString (str, pBoard->SN)));
 	v.push_back ("Asset Tag Number: " + toString (LocateString (str, pBoard->AssetTag)));
 
 	if (pBoard->Header.Length > 0x08) {
-		v.push_back ("–‡ÒÔÓÎÓÊÂÌËÂ Ì‡ ¯‡ÒÒË: " +
+		v.push_back ("–†–∞—Å–ø–æ–ª–æ–∂–µ–Ω–∏–µ –Ω–∞ —à–∞—Å—Å–∏: " +
 			toString (LocateString (str, pBoard->LocationInChassis)));
 	}
 
@@ -90,9 +90,9 @@ bool ProcSystemEnclosure (void* p, std::vector<std::string> &v)
 	PSystemEnclosure pSysEnclosure = (PSystemEnclosure)p;
 	const char *str = toPointString (p);
 
-	v.push_back ("œÓËÁ‚Ó‰ËÚÂÎ¸: " + toString (LocateString (str, pSysEnclosure->Manufacturer)));
-	v.push_back ("¬ÂÒËˇ: " + toString (LocateString (str, pSysEnclosure->Version)));
-	v.push_back ("—ÂËÈÌ˚È ÌÓÏÂ: " + toString (LocateString (str, pSysEnclosure->SN)));
+	v.push_back ("–ü—Ä–æ–∏–∑–≤–æ–¥–∏—Ç–µ–ª—å: " + toString (LocateString (str, pSysEnclosure->Manufacturer)));
+	v.push_back ("–í–µ—Ä—Å–∏—è: " + toString (LocateString (str, pSysEnclosure->Version)));
+	v.push_back ("–°–µ—Ä–∏–π–Ω—ã–π –Ω–æ–º–µ—Ä: " + toString (LocateString (str, pSysEnclosure->SN)));
 	v.push_back ("Asset Tag Number: " + toString (LocateString (str, pSysEnclosure->AssetTag)));
 
 	return true;
@@ -103,16 +103,16 @@ bool ProcProcessorInfo (void* p, std::vector<std::string> &v)
 	PProcessorInfo	pProcessor = (PProcessorInfo)p;
 	const char *str = toPointString (p);
 
-	v.push_back ("“ËÔ ÒÓÍÂÚ‡: " + toString (LocateString (str, pProcessor->SocketDesignation)) +
-		";  ÓÎË˜ÂÒÚ‚Ó ˇ‰Â: " + toString ((UINT)pProcessor->CoreCount));
-	v.push_back ("“ËÔ ÔÓˆÂÒÒÓ‡: " + toString (LocateString (str, pProcessor->Type)));
-	v.push_back ("œÓËÁ‚Ó‰ËÚÂÎ¸ ÔÓˆÂÒÒÓ‡: " + toString (LocateString (str, pProcessor->Manufacturer)));
-	v.push_back ("»‰ÂÌÚËÙËÍ‡ˆËÓÌÌ˚È ÌÓÏÂ: " + toString ((ULONG64)pProcessor->ID));
-	v.push_back ("—ÂËÈÌ˚È ÌÓÏÂ: " + toString (LocateString (str, pProcessor->SerialNumber)));
-	v.push_back ("ÕÓÏÂ Ô‡ÚËË: " + toString (LocateString (str, pProcessor->PartNumber)));
-	v.push_back ("¬ÌÂ¯Ìˇˇ Ú‡ÍÚÓ‚‡ˇ ˜‡ÒÚÓÚ‡: " + toString (pProcessor->ExtClock) + " M√ˆ");
-	v.push_back ("Ã‡ÍÒËÏ‡Î¸Ì‡ˇ Ú‡ÍÚÓ‚‡ˇ ˜‡ÒÚÓÚ‡ : " + toString (pProcessor->MaxSpeed) + " M√ˆ");
-	v.push_back ("“ÂÍÛ˘‡ˇ Ú‡ÍÚÓ‚‡ˇ ˜‡ÒÚÓÚ‡: " + toString (pProcessor->CurrentSpeed) + " M√ˆ");
+	v.push_back ("–¢–∏–ø —Å–æ–∫–µ—Ç–∞: " + toString (LocateString (str, pProcessor->SocketDesignation)) +
+		"; –ö–æ–ª–∏—á–µ—Å—Ç–≤–æ —è–¥–µ—Ä: " + toString ((UINT)pProcessor->CoreCount));
+	v.push_back ("–¢–∏–ø –ø—Ä–æ—Ü–µ—Å—Å–æ—Ä–∞: " + toString (LocateString (str, pProcessor->Type)));
+	v.push_back ("–ü—Ä–æ–∏–∑–≤–æ–¥–∏—Ç–µ–ª—å –ø—Ä–æ—Ü–µ—Å—Å–æ—Ä–∞: " + toString (LocateString (str, pProcessor->Manufacturer)));
+	v.push_back ("–ò–¥–µ–Ω—Ç–∏—Ñ–∏–∫–∞—Ü–∏–æ–Ω–Ω—ã–π –Ω–æ–º–µ—Ä: " + toString ((ULONG64)pProcessor->ID));
+	v.push_back ("–°–µ—Ä–∏–π–Ω—ã–π –Ω–æ–º–µ—Ä: " + toString (LocateString (str, pProcessor->SerialNumber)));
+	v.push_back ("–ù–æ–º–µ—Ä –ø–∞—Ä—Ç–∏–∏: " + toString (LocateString (str, pProcessor->PartNumber)));
+	v.push_back ("–í–Ω–µ—à–Ω—è—è —Ç–∞–∫—Ç–æ–≤–∞—è —á–∞—Å—Ç–æ—Ç–∞: " + toString (pProcessor->ExtClock) + " M–ì—Ü");
+	v.push_back ("–ú–∞–∫—Å–∏–º–∞–ª—å–Ω–∞—è —Ç–∞–∫—Ç–æ–≤–∞—è —á–∞—Å—Ç–æ—Ç–∞ : " + toString (pProcessor->MaxSpeed) + " M–ì—Ü");
+	v.push_back ("–¢–µ–∫—É—â–∞—è —Ç–∞–∫—Ç–æ–≤–∞—è —á–∞—Å—Ç–æ—Ç–∞: " + toString (pProcessor->CurrentSpeed) + " M–ì—Ü");
 
 	return true;
 }
@@ -122,8 +122,8 @@ bool ProcMemModuleInfo (void* p, std::vector<std::string> &v)
 	PMemModuleInfo	pMemModule = (PMemModuleInfo)p;
 	const char *str = toPointString (p);
 
-	v.push_back ("“ËÔ ÒÓÍÂÚ‡ Ô‡ÏˇÚË: " + toString (LocateString (str, pMemModule->SocketDesignation)));
-	v.push_back ("“ÂÍÛ˘‡ˇ ÒÍÓÓÒÚ¸: " + toString ((UINT)pMemModule->CurrentSpeed) + " ÌÒ");
+	v.push_back ("–¢–∏–ø —Å–æ–∫–µ—Ç–∞ –ø–∞–º—è—Ç–∏: " + toString (LocateString (str, pMemModule->SocketDesignation)));
+	v.push_back ("–¢–µ–∫—É—â–∞—è —Å–∫–æ—Ä–æ—Å—Ç—å: " + toString ((UINT)pMemModule->CurrentSpeed) + " –Ω—Å");
 
 	return true;
 }
@@ -133,7 +133,7 @@ bool ProcCacheInfo (void* p, std::vector<std::string> &v)
 	PCacheInfo	pCache = (PCacheInfo)p;
 	const char* str = toPointString (p);
 
-	//v.push_back (" ˝¯ ÔÓˆÂÒÒÓ‡: " + toString (LocateString (str, pCache->SocketDesignation)));
+	//v.push_back ("–ö—ç—à –ø—Ä–æ—Ü–µ—Å—Å–æ—Ä–∞: " + toString (LocateString (str, pCache->SocketDesignation)));
 	v.push_back(toString(LocateString(str, pCache->SocketDesignation)) + "; ");
 	return true;
 }

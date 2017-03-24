@@ -193,7 +193,7 @@ typedef struct _TYPE_22_
 #pragma pack(push) 
 
 
-#ifdef UNICODE
+#ifndef UNICODE
 #define getHeaderString  getHeaderStringW
 #define LocateString	LocateStringW
 #else
