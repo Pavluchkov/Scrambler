@@ -3,6 +3,7 @@
 
 #include <windows.h>
 #include <vector>
+#include "QString"
 #include <sstream>
 
 #pragma pack(push) 
@@ -201,35 +202,62 @@ typedef struct _TYPE_22_
 #define LocateString	LocateStringA
 #endif
 
-template <typename T> std::string toString (T val)
+template <typename T> QString toString (T val)
 {
 	std::ostringstream oss;
 	oss << val;
-	return oss.str ();
+    QString str = oss.str().c_str();
+    //return oss.str ();
+    return str;
 }
 
-template <typename T> T fromString (const std::string &s)
+//template <typename T> T fromString (const std::string &s)
+//{
+//	std::istringstream iss;
+//	T res;
+//	iss >> res;
+//	return res;
+//}
+
+class SMBios
 {
-	std::istringstream iss;
-	T res;
-	iss >> res;
-	return res;
-}
+public:
+    SMBios();
+    //virtual getInfo();
+    const char* LocateStringA (const char*, UINT);
+    const wchar_t* LocateStringW (const char*, UINT);
+    const char* toPointString (void*);
+    bool ProcBIOSInfo (void*);
+    int GetSMBInfo (int);
+};
 
-const char* LocateStringA (const char*, UINT);
-const wchar_t* LocateStringW (const char*, UINT);
-const char* toPointString (void*);
-bool ProcBIOSInfo (void*, std::vector<std::string> &);
-bool ProcSysInfo (void*, std::vector<std::string> &);
-bool ProcBoardInfo (void*, std::vector<std::string> &);
-bool ProcSystemEnclosure (void*, std::vector<std::string> &);
-bool ProcProcessorInfo (void*, std::vector<std::string> &);
-bool ProcMemModuleInfo (void*, std::vector<std::string> &);
-bool ProcCacheInfo (void *, std::vector<std::string> &);
-bool ProcOEMString (void*, std::vector<std::string> &);
-bool ProcMemoryDevice (void*, std::vector<std::string> &);
-bool ProcMemoryArrayMappedAddress (void*, std::vector<std::string> &);
-bool ProcPortableBattery (void*, std::vector<std::string> &);
-int GetSMBInfo (int, std::vector<std::string> &);
+class Bios:public SMBios
+{
+public:
+    Bios();
+    void getInfo();
+
+    QString Vendor;
+    QString Version;
+    QString ReleaseDate;
+    QString ROMSize;
+    QString MajorRelease;
+    QString MinorRelease;
+    QString ECFirmwareMajor;
+    QString ECFirmwareMinor;
+};
+
+
+//bool ProcSysInfo (void*, std::vector<std::string> &);
+//bool ProcBoardInfo (void*, std::vector<std::string> &);
+//bool ProcSystemEnclosure (void*, std::vector<std::string> &);
+//bool ProcProcessorInfo (void*, std::vector<std::string> &);
+//bool ProcMemModuleInfo (void*, std::vector<std::string> &);
+//bool ProcCacheInfo (void *, std::vector<std::string> &);
+//bool ProcOEMString (void*, std::vector<std::string> &);
+//bool ProcMemoryDevice (void*, std::vector<std::string> &);
+//bool ProcMemoryArrayMappedAddress (void*, std::vector<std::string> &);
+//bool ProcPortableBattery (void*, std::vector<std::string> &);
+
 
 #endif
