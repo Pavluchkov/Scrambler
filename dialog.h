@@ -2,6 +2,7 @@
 #define DIALOG_H
 
 #include <QDialog>
+#include "QSettings"
 
 namespace Ui {
 class Dialog;
@@ -16,6 +17,9 @@ public:
     ~Dialog();
 
 public:
+    void testLicense();
+    void setLicense();
+
     void scrambler_xor();
 
 private slots:
@@ -30,8 +34,14 @@ private slots:
 private:
     Ui::Dialog *ui;
 
+    QSettings*          license;
+    QVariant            trialEnd;
+    QVariant            trialTrue;
     QByteArray          buffer;
     unsigned long long   key;
+
+public:
+    bool                licenseFlag;
 };
 
 #endif // DIALOG_H

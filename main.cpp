@@ -1,5 +1,5 @@
 #include "dialog.h"
-#include "license.h"
+//#include "license.h"
 #include "QMessageBox"
 #include <QApplication>
 
@@ -7,18 +7,14 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    license lc("d:\\test.dat");
+    QApplication::setOrganizationName("Scrambler");
+    QApplication::setApplicationName("License");
 
-//    SMBios smbiosInfo;
+    Dialog w;
 
-//    QMessageBox::information(0,"Battery", smbiosInfo.PortableBattery.Date);
-//    QMessageBox::information(0,"Processor", smbiosInfo.CPU.SocketDesignation);
-    if(lc.testLicense()){
-        Dialog w;
+    if(w.licenseFlag){
         w.show();
-
         return a.exec();
-
     }
-    a.exit();
+        a.exit();
 }

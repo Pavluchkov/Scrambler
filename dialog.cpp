@@ -2,6 +2,7 @@
 #include "ui_dialog.h"
 #include "QFileDialog"
 #include "QMessageBox"
+#include "QInputDialog"
 #include "smbios.h"
 
 Dialog::Dialog(QWidget *parent) :
@@ -10,6 +11,12 @@ Dialog::Dialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //license = new QSettings(this);
+    license = new QSettings("d:\configuration.ini", QSettings::IniFormat, this);
+    trialEnd = 3;
+    trialTrue = 0;
+    licenseFlag = false;
+    testLicense();
     key = 0;
     QRegExp rx("\\d{9}[0-9]");
     QValidator *validator = new QRegExpValidator(rx, this);
@@ -19,6 +26,57 @@ Dialog::Dialog(QWidget *parent) :
 Dialog::~Dialog()
 {
     delete ui;
+}
+
+void Dialog::testLicense()
+{
+    trialEnd = license->value("End", trialEnd);
+    trialTrue = license->value("True", trialTrue);
+
+    if(trialTrue.toInt()){
+        licenseFlag = true;
+        return;
+    }
+
+    if (trialEnd.toInt() != 0){
+        licenseFlag = true;
+        int n = trialEnd.toInt() - 1;
+        license->setValue("End", n);
+
+        int a = QMessageBox::warning(0, "Information", "Вы используете Trial версию приложения!\n"
+                                                       "Срок действия пробного периода истекает\n"
+                                                       " через " + trialEnd.toString() + " запуска приложения!\n"
+                                                       "Желаете ввести ключ лицензии?",
+                                     QMessageBox::Yes | QMessageBox::No );
+        if(a == QMessageBox::Yes)
+            setLicense();
+    }
+    else {
+        licenseFlag = false;
+        setLicense();
+    }
+
+}
+
+void Dialog::setLicense()
+{
+    bool Ok;
+    QString str = QInputDialog::getText(0, "Input", "Пробный период закончен! \n"
+                                                    "Введите лицензионный ключ: ",
+                                        QLineEdit::Normal, "Девятизначный ключ", &Ok);
+    if(Ok){
+        if(str == "123"){
+            license->setValue("True", 1);
+            licenseFlag = true;
+            QMessageBox::information(0, "Information", "Лицензионный ключ принят!");
+        }
+        else{
+            QMessageBox::critical(0, "Error", "Вы ввели неверный ключ!");
+            setLicense();
+        }
+    }
+    //else
+         //QApplication::quit();
 }
 
 void Dialog::scrambler_xor()
