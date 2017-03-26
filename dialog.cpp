@@ -2,8 +2,7 @@
 #include "ui_dialog.h"
 #include "QFileDialog"
 #include "QMessageBox"
-#include "QTextStream"
-#include "QVector"
+#include "smbios.h"
 
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
@@ -24,7 +23,7 @@ Dialog::~Dialog()
 
 void Dialog::scrambler_xor()
 {
-    QMessageBox::information(0,"test","Процедура шифрования");
+    //QMessageBox::information(0,"test","Процедура шифрования");
     for(int i = 0; i < buffer.length(); i++){
         buffer[i] = buffer[i] ^ key;
     }
@@ -55,12 +54,24 @@ void Dialog::on_pushButton_Ok_clicked()
     QFile file(fileName);
     QString m = ui->comboBox_mode->currentText();
     QString mode_Scrambler = ui->comboBox_scrambler->currentText();
+    SMBios smbiosInfo;
     bool mode = false;
 
-    key = k.toInt();
+    if(ui->checkBox->isChecked())
+        key = smbiosInfo.CPU.ID.toULongLong();
+    else
+        if(!k.isEmpty())
+            key = k.toULongLong();
 
     if(m == "Шифрование")
         mode = true;
+
+    if(fileName.isEmpty()){
+        QMessageBox::warning(0, "Warning",
+                             (mode)? "Выберите шифруемый файл!":"Выберите дешифруемый файл!");
+        return;
+    }
+
 
     if (!file.open(QIODevice::ReadOnly)){
         QMessageBox::critical(0, "Error", "Ошибка открытия файла !");
@@ -71,6 +82,12 @@ void Dialog::on_pushButton_Ok_clicked()
     file.close();
 
     fileName = ui->lineEdit_Save->text();
+
+    if(fileName.isEmpty()){
+        QMessageBox::warning(0, "Warning",
+                             (mode)? "Укажите куда шифровать файл!":"Укажите куда дешифровать файл!");
+        return;
+    }
 
     file.setFileName(fileName);
     if (!file.open(QIODevice::WriteOnly)){
