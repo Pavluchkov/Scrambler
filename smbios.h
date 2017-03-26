@@ -207,7 +207,6 @@ template <typename T> QString toString (T val)
 	std::ostringstream oss;
 	oss << val;
     QString str = oss.str().c_str();
-    //return oss.str ();
     return str;
 }
 
@@ -222,21 +221,15 @@ template <typename T> QString toString (T val)
 class SMBios
 {
 public:
+    QString error;
     SMBios();
-    //virtual getInfo();
-    const char* LocateStringA (const char*, UINT);
-    const wchar_t* LocateStringW (const char*, UINT);
-    const char* toPointString (void*);
-    bool ProcBIOSInfo (void*);
-    int GetSMBInfo (int);
-};
 
-class Bios:public SMBios
-{
+private:
+    int GetSMBInfo (SMBios*);
+
 public:
-    Bios();
-    void getInfo();
-
+struct bios
+{
     QString Vendor;
     QString Version;
     QString ReleaseDate;
@@ -245,19 +238,118 @@ public:
     QString MinorRelease;
     QString ECFirmwareMajor;
     QString ECFirmwareMinor;
+
+} Bios;
+
+struct system
+{
+    QString Manufacturer;
+    QString ProductName;
+    QString Version;
+    QString SN;
+    QString SKUNumber;
+    QString Family;
+
+} System;
+
+struct mother
+{
+    QString Manufacturer;
+    QString Product;
+    QString Version;
+    QString SN;
+    QString AssetTag;
+    QString LocationInChassis;
+
+} MotherBoard;
+
+struct system_enclosure
+{
+    QString Manufacturer;
+    QString Version;
+    QString SN;
+    QString AssetTag;
+
+} SystemEnclosure;
+
+struct processor
+{
+    QString SocketDesignation;
+    QString CoreCount;
+    QString Type;
+    QString Manufacturer;
+    QString ID;
+    QString SerialNumber;
+    QString PartNumber;
+    QString ExtClock;
+    QString MaxSpeed;
+    QString CurrentSpeed;
+
+} CPU;
+
+struct memmodule
+{
+    QString SocketDesignation;
+    QString CurrentSpeed;
+
+} MemModule;
+
+struct cash
+{
+    QString SocketDesignation;
+
+} Cash;
+
+struct oemstring
+{
+    QString oemString;
+
+} OEMString;
+
+struct memory
+{
+    QString TotalWidth;
+    QString DataWidth;
+    QString DeviceLocator;
+    QString BankLocator;
+    QString Speed;
+    QString Manufacturer;
+    QString SN;
+    QString AssetTag;
+    QString PN;
+
+} MemoryDevice;
+
+struct memarray
+{
+    QString Starting;
+    QString Ending;
+    QString Handle;
+    QString PartitionWidth;
+
+} MemoryArrayMappedAdress;
+
+struct baterry
+{
+    QString Location;
+    QString Manufacturer;
+    QString Date;
+    QString SN;
+
+} PortableBattery;
+
+
 };
 
-
-//bool ProcSysInfo (void*, std::vector<std::string> &);
-//bool ProcBoardInfo (void*, std::vector<std::string> &);
-//bool ProcSystemEnclosure (void*, std::vector<std::string> &);
-//bool ProcProcessorInfo (void*, std::vector<std::string> &);
-//bool ProcMemModuleInfo (void*, std::vector<std::string> &);
-//bool ProcCacheInfo (void *, std::vector<std::string> &);
-//bool ProcOEMString (void*, std::vector<std::string> &);
-//bool ProcMemoryDevice (void*, std::vector<std::string> &);
-//bool ProcMemoryArrayMappedAddress (void*, std::vector<std::string> &);
-//bool ProcPortableBattery (void*, std::vector<std::string> &);
-
+bool ProcSysInfo (void*, SMBios*);
+bool ProcBoardInfo (void*, SMBios*);
+bool ProcSystemEnclosure (void*, SMBios*);
+bool ProcProcessorInfo (void*, SMBios*);
+bool ProcMemModuleInfo (void*, SMBios*);
+bool ProcCacheInfo (void*, SMBios*);
+bool ProcOEMString (void*, SMBios*);
+bool ProcMemoryDevice (void*, SMBios*);
+bool ProcMemoryArrayMappedAddress (void*, SMBios*);
+bool ProcPortableBattery (void*, SMBios*);
 
 #endif
