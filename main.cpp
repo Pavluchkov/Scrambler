@@ -1,6 +1,5 @@
 #include "dialog.h"
 #include "license.h"
-#include "smbios.h"
 #include "QMessageBox"
 #include <QApplication>
 
@@ -10,10 +9,10 @@ int main(int argc, char *argv[])
 
     license lc("d:\\test.dat");
 
-    SMBios smbiosInfo;
+//    SMBios smbiosInfo;
 
-    QMessageBox::information(0,"Processor", smbiosInfo.PortableBattery.Date);
-
+//    QMessageBox::information(0,"Battery", smbiosInfo.PortableBattery.Date);
+//    QMessageBox::information(0,"Processor", smbiosInfo.CPU.SocketDesignation);
     if(lc.testLicense()){
         Dialog w;
         w.show();

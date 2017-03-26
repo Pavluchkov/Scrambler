@@ -31,7 +31,7 @@ private:
     Ui::Dialog *ui;
 
     QByteArray          buffer;
-    unsigned long int   key;
+    unsigned long long   key;
 };
 
 #endif // DIALOG_H
