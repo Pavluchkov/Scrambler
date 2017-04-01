@@ -1,5 +1,6 @@
 #include "dialog.h"
 //#include "license.h"
+#include "windowlicense.h"
 #include "QMessageBox"
 #include <QApplication>
 
@@ -16,5 +17,6 @@ int main(int argc, char *argv[])
         w.show();
         return a.exec();
     }
-        a.exit();
+
+    a.exit();
 }

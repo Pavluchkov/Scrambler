@@ -1,3 +1,4 @@
+#include "windowlicense.h"
 #include "dialog.h"
 #include "ui_dialog.h"
 #include "QFileDialog"
@@ -60,23 +61,28 @@ void Dialog::testLicense()
 
 void Dialog::setLicense()
 {
-    bool Ok;
-    QString str = QInputDialog::getText(0, "Input", "Пробный период закончен! \n"
-                                                    "Введите лицензионный ключ: ",
-                                        QLineEdit::Normal, "Девятизначный ключ", &Ok);
-    if(Ok){
-        if(str == "123"){
-            license->setValue("True", 1);
-            licenseFlag = true;
-            QMessageBox::information(0, "Information", "Лицензионный ключ принят!");
-        }
-        else{
-            QMessageBox::critical(0, "Error", "Вы ввели неверный ключ!");
-            setLicense();
-        }
-    }
-    //else
-         //QApplication::quit();
+    //bool Ok;
+
+    windowLicense* win = new windowLicense(this);
+
+   win->exec();
+
+
+//    QString str = QInputDialog::getText(0, "Input", "Пробный период закончен! \n"
+//                                                    "Введите лицензионный ключ: ",
+//                                        QLineEdit::Normal, "Девятизначный ключ", &Ok);
+//    if(Ok){
+//        if(str == "123"){
+//            license->setValue("True", 1);
+//            licenseFlag = true;
+//            QMessageBox::information(0, "Information", "Лицензионный ключ принят!");
+//        }
+//        else{
+//            QMessageBox::critical(0, "Error", "Вы ввели неверный ключ!");
+//            setLicense();
+//        }
+//    }
+//licenseFlag = true;
 }
 
 void Dialog::scrambler_xor()

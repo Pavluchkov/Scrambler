@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include "QSettings"
+#include "windowlicense.h"
 
 namespace Ui {
 class Dialog;
@@ -31,7 +32,7 @@ private slots:
 
     void on_pushButton_Ok_clicked();
 
-private:
+protected:
     Ui::Dialog *ui;
 
     QSettings*          license;
@@ -42,6 +43,7 @@ private:
 
 public:
     bool                licenseFlag;
+
 };
 
 #endif // DIALOG_H
