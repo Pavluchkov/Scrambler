@@ -19,8 +19,16 @@ public:
 private slots:
     void on_pushButton_ok_clicked();
 
+    void on_pushButton_cancel_clicked();
+
 private:
     Ui::windowLicense *ui;
+
+public:
+    bool flag;
+
+signals:
+    void goodby();
 };
 
 #endif // WINDOWLICENSE_H

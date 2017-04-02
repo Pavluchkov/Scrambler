@@ -8,7 +8,8 @@ windowLicense::windowLicense(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QRegExp rx("[A-Z-]+");
+    flag = false;
+    QRegExp rx("[A-Z]{4}-[A-Z]{4}-[A-Z]{4}-[A-Z]{4}");
     QValidator *validator = new QRegExpValidator(rx, this);
     ui->lineEdit_key->setValidator(validator);
 }
@@ -20,16 +21,25 @@ windowLicense::~windowLicense()
 
 void windowLicense::on_pushButton_ok_clicked()
 {
-    QString keyString = ui->lineEdit_key->text();
+    QString temp;
+    int sum = 0;
 
-//        if(keyString == "123"){
-//            license->setValue("True", 1);
-//            licenseFlag = true;
-//            QMessageBox::information(0, "Information", "Лицензионный ключ принят!");
-//        }
-//        else{
-//            QMessageBox::critical(0, "Error", "Вы ввели неверный ключ!");
-//            setLicense();
-//        }
-//    }
+    temp = ui->lineEdit_key->text();
+
+    for(auto i:temp){
+        if(i != '-')
+            sum += i.unicode();
+    }
+    //QMessageBox::information(0,"", QString("arg(sum)%1").arg(sum));
+    if(sum == 1200){
+        flag = true;
+        emit goodby();
+    }
+    else
+        QMessageBox::critical(0, "Error", "Вы ввели неверный ключ!");
+}
+
+void windowLicense::on_pushButton_cancel_clicked()
+{
+    emit goodby();
 }
