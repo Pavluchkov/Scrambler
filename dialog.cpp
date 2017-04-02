@@ -61,7 +61,7 @@ void Dialog::testLicense()
 
 void Dialog::setLicense()
 {
-    windowLicense* win = new windowLicense(this);
+    windowLicense* win = new windowLicense;
     QObject::connect(win, SIGNAL(goodby()), win, SLOT(close()));
     win->exec();
 
@@ -70,6 +70,7 @@ void Dialog::setLicense()
         licenseFlag = true;
         QMessageBox::information(0, "Information", "Лицензионный ключ принят!");
     }
+    delete win;
 }
 
 void Dialog::scrambler_xor()

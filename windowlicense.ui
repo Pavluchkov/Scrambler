@@ -10,11 +10,14 @@
     <x>0</x>
     <y>0</y>
     <width>323</width>
-    <height>113</height>
+    <height>123</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Окно ввода ключа</string>
+  </property>
+  <property name="sizeGripEnabled">
+   <bool>true</bool>
   </property>
   <property name="modal">
    <bool>false</bool>
