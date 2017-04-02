@@ -1,3 +1,4 @@
+#include "windowlicense.h"
 #include "dialog.h"
 #include "ui_dialog.h"
 #include "QFileDialog"
@@ -46,7 +47,7 @@ void Dialog::testLicense()
         int a = QMessageBox::warning(0, "Information", "Вы используете Trial версию приложения!\n"
                                                        "Срок действия пробного периода истекает\n"
                                                        " через " + trialEnd.toString() + " запуска приложения!\n"
-                                                       "Желаете ввести ключ лицензии?",
+                                                                                         "Желаете ввести ключ лицензии?",
                                      QMessageBox::Yes | QMessageBox::No );
         if(a == QMessageBox::Yes)
             setLicense();
@@ -60,23 +61,16 @@ void Dialog::testLicense()
 
 void Dialog::setLicense()
 {
-    bool Ok;
-    QString str = QInputDialog::getText(0, "Input", "Пробный период закончен! \n"
-                                                    "Введите лицензионный ключ: ",
-                                        QLineEdit::Normal, "Девятизначный ключ", &Ok);
-    if(Ok){
-        if(str == "123"){
-            license->setValue("True", 1);
-            licenseFlag = true;
-            QMessageBox::information(0, "Information", "Лицензионный ключ принят!");
-        }
-        else{
-            QMessageBox::critical(0, "Error", "Вы ввели неверный ключ!");
-            setLicense();
-        }
+    windowLicense* win = new windowLicense;
+    QObject::connect(win, SIGNAL(goodby()), win, SLOT(close()));
+    win->exec();
+
+    if(win->flag){
+        license->setValue("True", 1);
+        licenseFlag = true;
+        QMessageBox::information(0, "Information", "Лицензионный ключ принят!");
     }
-    //else
-         //QApplication::quit();
+    delete win;
 }
 
 void Dialog::scrambler_xor()
