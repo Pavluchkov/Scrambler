@@ -22,6 +22,8 @@ Dialog::Dialog(QWidget *parent) :
     QRegExp rx("\\d{9}[0-9]");
     QValidator *validator = new QRegExpValidator(rx, this);
     ui->lineEdit_key->setValidator(validator);
+
+    //QObject::connect(ui->checkBox, SIGNAL(clicked()), ui->lineEdit_key, SLOT());
 }
 
 Dialog::~Dialog()
@@ -109,11 +111,7 @@ void Dialog::on_pushButton_Ok_clicked()
     SMBios smbiosInfo;
     bool mode = false;
 
-    if(ui->checkBox->isChecked())
-        key = smbiosInfo.CPU.ID.toULongLong();
-    else
-        if(!k.isEmpty())
-            key = k.toULongLong();
+    key = 0;
 
     if(m == "Шифрование")
         mode = true;
@@ -123,7 +121,6 @@ void Dialog::on_pushButton_Ok_clicked()
                              (mode)? "Выберите шифруемый файл!":"Выберите дешифруемый файл!");
         return;
     }
-
 
     if (!file.open(QIODevice::ReadOnly)){
         QMessageBox::critical(0, "Error", "Ошибка открытия файла !");
@@ -145,6 +142,19 @@ void Dialog::on_pushButton_Ok_clicked()
     if (!file.open(QIODevice::WriteOnly)){
         QMessageBox::critical(0, "Error", "Ошибка создания файла !");
         return;
+    }
+
+    if(ui->checkBox->isChecked()){
+        key = smbiosInfo.CPU.ID.toULongLong();
+        //ui->lineEdit_key->setDisabled(true);
+    }
+    else {
+        if(!k.isEmpty())
+            key = k.toULongLong();
+        else{
+            QMessageBox::warning(0,"Warning", "Введите ключ шифрования!");
+            return;
+        }
     }
 
     if(mode_Scrambler == "Операция сложения по модулю 2"){

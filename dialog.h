@@ -32,7 +32,7 @@ private slots:
 
     void on_pushButton_Ok_clicked();
 
-protected:
+private:
     Ui::Dialog *ui;
 
     QSettings*          license;
