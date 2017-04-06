@@ -159,7 +159,7 @@ void Dialog::on_pushButton_Ok_clicked()
 
     if(ui->checkBox->isChecked()){
         key = smbiosInfo.CPU.ID.toULongLong();
-        //ui->lineEdit_key->setDisabled(true);
+        //QMessageBox::information(0,"", QString("ID = %1").arg(key));
     }
     else {
         if(!k.isEmpty())
