@@ -32,6 +32,8 @@ private slots:
 
     void on_pushButton_Ok_clicked();
 
+    void disableLineEditKey();
+
 private:
     Ui::Dialog *ui;
 
@@ -39,6 +41,7 @@ private:
     QVariant            trialEnd;
     QVariant            trialTrue;
     QByteArray          buffer;
+    QString             oldText;
     unsigned long long   key;
 
 public:

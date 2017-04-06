@@ -23,12 +23,25 @@ Dialog::Dialog(QWidget *parent) :
     QValidator *validator = new QRegExpValidator(rx, this);
     ui->lineEdit_key->setValidator(validator);
 
-    //QObject::connect(ui->checkBox, SIGNAL(clicked()), ui->lineEdit_key, SLOT());
+    connect(ui->checkBox, SIGNAL(clicked(bool)), this, SLOT(disableLineEditKey()));
 }
 
 Dialog::~Dialog()
 {
     delete ui;
+}
+
+void Dialog::disableLineEditKey()
+{
+    if(ui->checkBox->isChecked()){
+        oldText = ui->lineEdit_key->text();
+        ui->lineEdit_key->setText("Привязка к железу...");
+        ui->lineEdit_key->setDisabled(true);
+    }
+    else{
+        ui->lineEdit_key->setText(oldText);
+        ui->lineEdit_key->setDisabled(false);
+    }
 }
 
 void Dialog::testLicense()

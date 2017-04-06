@@ -12,8 +12,6 @@ int main(int argc, char *argv[])
     QApplication::setApplicationName("License");
 
     Dialog w;
-//test commit
-//test2 commit
 
     if(w.licenseFlag){
         w.show();
