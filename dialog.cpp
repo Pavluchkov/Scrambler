@@ -131,7 +131,7 @@ void Dialog::on_pushButton_Ok_clicked()
 
     if(fileName.isEmpty()){
         QMessageBox::warning(0, "Warning",
-                             (mode)? "Выберите шифруемый файл!":"Выберите дешифруемый файл!");
+                             (mode)? "Укажите шифруемый файл!":"Укажите дешифруемый файл!");
         return;
     }
 
@@ -143,11 +143,17 @@ void Dialog::on_pushButton_Ok_clicked()
     buffer = file.readAll();
     file.close();
 
+    QString temp = fileName;
+
     fileName = ui->lineEdit_Save->text();
 
+    if(fileName == temp){
+        QMessageBox::warning(0, "Warning", "Входной и выходной файл совпадают.");
+        return;
+    }
+
     if(fileName.isEmpty()){
-        QMessageBox::warning(0, "Warning",
-                             (mode)? "Укажите куда шифровать файл!":"Укажите куда дешифровать файл!");
+        QMessageBox::warning(0,"Warning", "Укажите выходной файл!");
         return;
     }
 
