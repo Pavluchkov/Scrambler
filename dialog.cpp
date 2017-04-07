@@ -19,11 +19,13 @@ Dialog::Dialog(QWidget *parent) :
     licenseFlag = false;
     testLicense();
     key = 0;
+    oldText = "";
     QRegExp rx("\\d{9}[0-9]");
     QValidator *validator = new QRegExpValidator(rx, this);
     ui->lineEdit_key->setValidator(validator);
 
     connect(ui->checkBox, SIGNAL(clicked(bool)), this, SLOT(disableLineEditKey()));
+    connect(ui->comboBox_scrambler, SIGNAL(currentIndexChanged(QString)), this, SLOT(disableLineEditKey()));
 }
 
 Dialog::~Dialog()
@@ -33,14 +35,22 @@ Dialog::~Dialog()
 
 void Dialog::disableLineEditKey()
 {
+    SMBios smbiosInfo;
+
     if(ui->checkBox->isChecked()){
         oldText = ui->lineEdit_key->text();
+        key = smbiosInfo.CPU.ID.toULongLong();
+        QMessageBox::warning(0,"Warning", QString("Key = %1").arg(key));
         ui->lineEdit_key->setText("Привязка к железу...");
         ui->lineEdit_key->setDisabled(true);
     }
     else{
         ui->lineEdit_key->setText(oldText);
         ui->lineEdit_key->setDisabled(false);
+    }
+
+    if(ui->comboBox_scrambler->currentIndex() > 0){
+        ui->lineEdit_key->setDisabled(true);
     }
 }
 
@@ -59,11 +69,11 @@ void Dialog::testLicense()
         int n = trialEnd.toInt() - 1;
         license->setValue("End", n);
 
-        int a = QMessageBox::warning(0, "Information", "Вы используете Trial версию приложения!\n"
-                                                       "Срок действия пробного периода истекает\n"
-                                                       " через " + trialEnd.toString() + " запуска приложения!\n"
-                                                                                         "Желаете ввести ключ лицензии?",
-                                     QMessageBox::Yes | QMessageBox::No );
+        int a = QMessageBox::warning(0, "Warning",
+                                     "Вы используете Trial версию приложения!\n"
+                                     "Срок действия пробного периода истекает\n"
+                                     "            через " + trialEnd.toString() + " запуска приложения!\n"
+                                                                                  "        Желаете ввести ключ лицензии?", QMessageBox::Yes | QMessageBox::No );
         if(a == QMessageBox::Yes)
             setLicense();
     }
@@ -97,6 +107,20 @@ void Dialog::scrambler_xor()
 
 }
 
+void Dialog::simpleRep()
+{
+    for(int i = 0; i < buffer.length(); i++){
+        buffer[i] = (buffer[i] + 5) ^ key;
+    }
+}
+
+void Dialog::deSimpleRep()
+{
+    for(int i = 0; i < buffer.length(); i++){
+        buffer[i] = (buffer[i] - 5) ^ key;
+    }
+}
+
 void Dialog::on_toolButton_Load_clicked()
 {
     QString strLoad = QFileDialog::getOpenFileName(this, "Open File", "", "");
@@ -117,14 +141,14 @@ void Dialog::on_pushButton_Cancel_clicked()
 void Dialog::on_pushButton_Ok_clicked()
 {
     QString fileName = ui->lineEdit_Load->text();
-    QString k = ui->lineEdit_key->text();
+
     QFile file(fileName);
     QString m = ui->comboBox_mode->currentText();
     QString mode_Scrambler = ui->comboBox_scrambler->currentText();
-    SMBios smbiosInfo;
+    //SMBios smbiosInfo;
     bool mode = false;
 
-    key = 0;
+
 
     if(m == "Шифрование")
         mode = true;
@@ -163,24 +187,36 @@ void Dialog::on_pushButton_Ok_clicked()
         return;
     }
 
-    if(ui->checkBox->isChecked()){
-        key = smbiosInfo.CPU.ID.toULongLong();
-        //QMessageBox::information(0,"", QString("ID = %1").arg(key));
-    }
-    else {
+//    if(ui->checkBox->isChecked()){
+//        key = smbiosInfo.CPU.ID.toULongLong();
+//        QMessageBox::information(0,"", QString("ID = %1").arg(key));
+//    }
+//    else {
+    QString k = ui->lineEdit_key->text();
+
         if(!k.isEmpty())
             key = k.toULongLong();
         else{
-            QMessageBox::warning(0,"Warning", "Введите ключ шифрования!");
-            return;
+            if(ui->comboBox_scrambler->currentIndex() < 1){
+                QMessageBox::warning(0,"Warning", "Введите ключ шифрования!");
+                return;
+            }
         }
-    }
+        QMessageBox::warning(0,"Warning", QString("Key = %1").arg(key));
+//    }
 
     if(mode_Scrambler == "Операция сложения по модулю 2"){
         if(mode){
             scrambler_xor();
         }
         else scrambler_xor();
+    }
+
+    if(mode_Scrambler == "Одноалфавитный шифр"){
+        if(mode){
+            simpleRep();
+        }
+        else deSimpleRep();
     }
 
     file.write(buffer);

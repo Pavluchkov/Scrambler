@@ -17,11 +17,13 @@ public:
     explicit Dialog(QWidget *parent = 0);
     ~Dialog();
 
-public:
+private:
     void testLicense();
     void setLicense();
 
     void scrambler_xor();
+    void simpleRep();
+    void deSimpleRep();
 
 private slots:
     void on_toolButton_Load_clicked();

@@ -198,12 +198,12 @@
          </property>
          <item>
           <property name="text">
-           <string>Одноалфавитный шифр</string>
+           <string>Операция сложения по модулю 2</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>Операция сложения по модулю 2</string>
+           <string>Одноалфавитный шифр</string>
           </property>
          </item>
          <item>
