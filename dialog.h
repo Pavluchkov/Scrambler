@@ -35,6 +35,7 @@ private slots:
     void on_pushButton_Ok_clicked();
 
     void disableLineEditKey();
+    void comboChange();
 
 private:
     Ui::Dialog *ui;
