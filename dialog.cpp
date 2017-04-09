@@ -143,8 +143,7 @@ void Dialog::on_pushButton_Cancel_clicked()
 
 void Dialog::on_pushButton_Ok_clicked()
 {
-    QString fileName = ui->lineEdit_Load->text();
-    QFile file(fileName);
+
     QString m = ui->comboBox_mode->currentText();
     QString mode_Scrambler = ui->comboBox_scrambler->currentText();
     SMBios smbiosInfo;
@@ -153,11 +152,37 @@ void Dialog::on_pushButton_Ok_clicked()
     if(m == "Шифрование")
         mode = true;
 
-    if(fileName.isEmpty()){
+    if(ui->lineEdit_Load->text().isEmpty()){
         QMessageBox::warning(0, "Warning",
                              (mode)? "Укажите шифруемый файл!":"Укажите дешифруемый файл!");
         return;
     }
+
+    if(ui->lineEdit_Save->text().isEmpty()){
+        QMessageBox::warning(0,"Warning", "Укажите выходной файл!");
+        return;
+    }
+
+    if(ui->lineEdit_Load->text() == ui->lineEdit_Save->text()){
+        QMessageBox::warning(0, "Warning", "Входной и выходной файл совпадают.");
+        return;
+    }
+
+    QString k = ui->lineEdit_key->text();
+    int temp = ui->comboBox_scrambler->currentIndex();
+
+    if((k.isEmpty()) && (temp < 1)){
+        QMessageBox::warning(0,"Warning", "Введите ключ шифрования!");
+        return;
+    }
+
+    if(k == "Привязка к железу...")
+        key = smbiosInfo.CPU.ID.toULongLong();
+    else
+        key = k.toLongLong();
+
+    QString fileName = ui->lineEdit_Load->text();
+    QFile file(fileName);
 
     if (!file.open(QIODevice::ReadOnly)){
         QMessageBox::critical(0, "Error", "Ошибка открытия файла !");
@@ -167,36 +192,11 @@ void Dialog::on_pushButton_Ok_clicked()
     buffer = file.readAll();
     file.close();
 
-    QString temp = fileName;
-
     fileName = ui->lineEdit_Save->text();
-
-    if(fileName == temp){
-        QMessageBox::warning(0, "Warning", "Входной и выходной файл совпадают.");
-        return;
-    }
-
-    if(fileName.isEmpty()){
-        QMessageBox::warning(0,"Warning", "Укажите выходной файл!");
-        return;
-    }
-
     file.setFileName(fileName);
+
     if (!file.open(QIODevice::WriteOnly)){
         QMessageBox::critical(0, "Error", "Ошибка создания файла !");
-        return;
-    }
-
-    QString k = ui->lineEdit_key->text();
-    int temp1 = ui->comboBox_scrambler->currentIndex();
-
-    if(k == "Привязка к железу...")
-        key = smbiosInfo.CPU.ID.toULongLong();
-    else
-        key = k.toLongLong();
-
-    if((k.isEmpty()) && (temp1 < 1)){
-        QMessageBox::warning(0,"Warning", "Введите ключ шифрования!");
         return;
     }
 

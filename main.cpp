@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     QApplication::setApplicationName("License");
 
     Dialog w;
-    //test
+
     if(w.licenseFlag){
         w.show();
         return a.exec();
