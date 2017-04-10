@@ -208,6 +208,21 @@
          </item>
          <item>
           <property name="text">
+           <string>Омофонная замена (1х2)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Блочная замена (3х3)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Многоалфавитная замена (2 алфавита)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>Начало в конец, конец в начало</string>
           </property>
          </item>
@@ -223,27 +238,7 @@
          </item>
          <item>
           <property name="text">
-           <string>Многоалфавитная замена (2 алфавита)</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Блочная замена (3х3)</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
            <string>Блочная замена (2х2)</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Омофонная замена (1х3)</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Омофонная замена (1х2)</string>
           </property>
          </item>
         </widget>

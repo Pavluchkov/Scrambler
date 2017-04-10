@@ -3,6 +3,8 @@
 #include "ui_dialog.h"
 #include "QFileDialog"
 #include "QMessageBox"
+#include "QtAlgorithms"
+#include "algorithm"
 #include "QInputDialog"
 #include "smbios.h"
 
@@ -110,17 +112,67 @@ void Dialog::scrambler_xor()
     }
 }
 
-void Dialog::simpleRep()
+void Dialog::simpleRep(bool flag)
 {
     for(int i = 0; i < buffer.length(); i++){
-        buffer[i] = (buffer[i] + 5) ^ key;
+
+        if(flag){
+            buffer[i] = (buffer[i] + 5) ^ key;
+        }
+        else buffer[i] = (buffer[i] ^ key) - 5;
     }
 }
 
-void Dialog::deSimpleRep()
+void Dialog::omofChange(bool flag)
 {
-    for(int i = 0; i < buffer.length(); i++){
-        buffer[i] = (buffer[i] ^ key) - 5;
+    char temp;
+
+    if(flag){
+
+        for(int i = 0; i < buffer.length(); i+= 2){
+            temp = (buffer[i] + 2) ^ key;
+            buffer[i] = temp;
+            temp = (buffer[i] - 4) ^ key;
+            buffer.insert(i + 1, temp);
+        }
+    }
+    else{
+
+        for(int i = 0; i < buffer.length(); i++){
+            buffer[i] = (buffer[i] ^ key) - 2;
+            buffer.remove(i + 1, 1);
+        }
+    }
+}
+
+void Dialog::blockChange(bool flag)
+{
+    for(int i = 0; i <= buffer.length() - 3; i += 3){
+
+        QByteArray strFind;
+        QByteArray strChange;
+        strFind.push_back(buffer[i]);
+        strFind.push_back(buffer[i+1]);
+        strFind.push_back(buffer[i+2]);
+        if(flag){
+            strChange.push_back(strFind[2]);
+            char c = (strFind[1]/* + 1*/) ^ key;
+            strChange.push_back(c);
+            strChange.push_back(strFind[0]);
+        }
+        else {
+            strChange.push_back(strFind[2]);
+            char c = (strFind[1] ^ key/* + 1*/) ;
+            strChange.push_back(c);
+            strChange.push_back(strFind[0]);
+        }
+        int j = i;
+
+        while((j = buffer.indexOf(strFind, j)) != -1){
+            //QMessageBox::information(0,"", strFind + QString(" j = %1").arg(j));
+            buffer.replace(j, 3, strChange);
+            j += 3;
+        }
     }
 }
 
@@ -203,17 +255,19 @@ void Dialog::on_pushButton_Ok_clicked()
     //QMessageBox::warning(0,"Warning", QString("Key = %1").arg(key));
 
     if(mode_Scrambler == "Операция сложения по модулю 2"){
-        if(mode){
-            scrambler_xor();
-        }
-        else scrambler_xor();
+        scrambler_xor();
     }
 
     if(mode_Scrambler == "Одноалфавитный шифр"){
-        if(mode){
-            simpleRep();
-        }
-        else deSimpleRep();
+        simpleRep(mode);
+    }
+
+    if(mode_Scrambler == "Омофонная замена (1х2)"){
+        omofChange(mode);
+    }
+
+    if(mode_Scrambler == "Блочная замена (3х3)"){
+        blockChange(mode);
     }
 
     file.write(buffer);

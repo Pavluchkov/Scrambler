@@ -22,8 +22,9 @@ private:
     void setLicense();
 
     void scrambler_xor();
-    void simpleRep();
-    void deSimpleRep();
+    void simpleRep(bool);
+    void omofChange(bool);
+    void blockChange(bool);
 
 private slots:
     void on_toolButton_Load_clicked();
@@ -45,7 +46,7 @@ private:
     QVariant            trialTrue;
     QByteArray          buffer;
     QString             oldText;
-    unsigned long long   key;
+    unsigned long long  key;
 
 public:
     bool                licenseFlag;
