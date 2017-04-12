@@ -147,33 +147,67 @@ void Dialog::omofChange(bool flag)
 
 void Dialog::blockChange(bool flag)
 {
-    for(int i = 0; i <= buffer.length() - 3; i += 3){
+    QVector<int> index;
+    int indexPoint = 1;
+    int step = 3;
+    int count = 0;
+    int hvost = buffer.length() % 3;
 
-        QByteArray strFind;
-        QByteArray strChange;
+    QByteArray strFind;
+    QByteArray strChange;
+
+    for(int i = 0; i < buffer.length() - hvost; i += step){
+
+        strFind.clear();
+        strChange.clear();
+
+        if(!index.isEmpty()){
+
+            qCount(index.begin(), index.end(), i, count);
+
+            if(count){
+
+                step = 3;
+                count = 0;
+                ++indexPoint;
+                //QMessageBox::information(0,"",QString("IndexPoint = %1").arg(indexPoint));
+                continue;
+            }
+            if(indexPoint < index.length()){
+
+                if((step = index[indexPoint] - i) < 3)
+                    if(step > 0)
+                        continue;
+            }
+            step = 3;
+        }
+
+        //QMessageBox::information(0,"", QString(" i = %1\n").arg(i) +
+        //QString(" indexPoint = %1\n").arg(indexPoint) +
+        //QString(" Step = %1\n").arg(step) + buffer);
+
+
         strFind.push_back(buffer[i]);
         strFind.push_back(buffer[i+1]);
         strFind.push_back(buffer[i+2]);
-        if(flag){
-            strChange.push_back(strFind[2]);
-            char c = (strFind[1]/* + 1*/) ^ key;
-            strChange.push_back(c);
-            strChange.push_back(strFind[0]);
-        }
-        else {
-            strChange.push_back(strFind[2]);
-            char c = (strFind[1] ^ key/* + 1*/) ;
-            strChange.push_back(c);
-            strChange.push_back(strFind[0]);
-        }
-        int j = i;
 
+        strChange.push_back(strFind[2]);
+        //char c = (strFind[1]/* + 1*/) ^ key;
+        strChange.push_back(strFind[1]/* ^ key*/);
+        strChange.push_back(strFind[0]);
+
+
+        int j = i;
+        //buffer.replace(j, 3, strChange);
         while((j = buffer.indexOf(strFind, j)) != -1){
-            //QMessageBox::information(0,"", strFind + QString(" j = %1").arg(j));
+
+            index.push_back(j);
             buffer.replace(j, 3, strChange);
             j += 3;
         }
+
     }
+
 }
 
 void Dialog::on_toolButton_Load_clicked()
