@@ -3,8 +3,9 @@
 #include "ui_dialog.h"
 #include "QFileDialog"
 #include "QMessageBox"
-#include "QtAlgorithms"
-#include "algorithm"
+//#include "QtAlgorithms"
+//#include "fstream"
+//#include "iostream"
 #include "QInputDialog"
 #include "smbios.h"
 
@@ -28,6 +29,9 @@ Dialog::Dialog(QWidget *parent) :
 
     connect(ui->checkBox, SIGNAL(clicked(bool)), this, SLOT(disableLineEditKey()));
     connect(ui->comboBox_scrambler, SIGNAL(currentIndexChanged(int)), this, SLOT(comboChange()));
+
+    ui->lineEdit_Load->setText("C:\\Users\\Rtp_9\\Desktop\\test_origin.txt");
+    ui->lineEdit_Save->setText("C:\\Users\\Rtp_9\\Desktop\\test1.txt");
 }
 
 Dialog::~Dialog()
@@ -148,64 +152,146 @@ void Dialog::omofChange(bool flag)
 void Dialog::blockChange(bool flag)
 {
     QVector<int> index;
-    int indexPoint = 1;
     int step = 3;
     int count = 0;
     int hvost = buffer.length() % 3;
 
     QByteArray strFind;
     QByteArray strChange;
+    QString fileName_key;
 
-    for(int i = 0; i < buffer.length() - hvost; i += step){
+    if(flag)
+        fileName_key = ui->lineEdit_Save->text();
+    else
+        fileName_key = ui->lineEdit_Load->text();
 
-        strFind.clear();
-        strChange.clear();
+    int j = 0;
 
-        if(!index.isEmpty()){
+    j = fileName_key.indexOf(".", j);
+    fileName_key.replace(j + 1, 3, "key");
 
-            qCount(index.begin(), index.end(), i, count);
+    QFile f(fileName_key);
+    int ind = 0;
 
-            if(count){
+    if(flag){
+
+        for(int i = 0; i < buffer.length() - hvost; i += step){
+
+            strFind.clear();
+            strChange.clear();
+
+
+            //if(!index.isEmpty()){
+
+                count = 0;
+                qCount(index, i, count);
+
+                if(count){
+                    step = 3;
+                    continue;
+                }
+
+                for(auto k:index){
+
+                    if(k > i){
+                        ind = k;
+                        step = ind - i;
+                        break;
+                    }
+                }
+
+
+                if((step < 3) && (step > 0))
+                    continue;
 
                 step = 3;
-                count = 0;
-                ++indexPoint;
-                //QMessageBox::information(0,"",QString("IndexPoint = %1").arg(indexPoint));
-                continue;
-            }
-            if(indexPoint < index.length()){
+            //}
 
-                if((step = index[indexPoint] - i) < 3)
-                    if(step > 0)
-                        continue;
+            //   QMessageBox::information(0,"", QString(" i = %1\n").arg(i) +
+            //   QString(" ind = %1\n").arg(ind) +
+            //   QString(" Step = %1\n").arg(step) + QString(buffer).fromLocal8Bit(buffer));
+
+            strFind.push_back(buffer[i]);
+            strFind.push_back(buffer[i+1]);
+            strFind.push_back(buffer[i+2]);
+
+            strChange.push_back(strFind[2]);
+            strChange.push_back(strFind[1]);
+            strChange.push_back(strFind[0]);
+
+            int j = i;
+
+            while((j = buffer.indexOf(strFind, j)) != -1){
+//                count = 0;
+//                qCount(index, j, count);
+
+//                if(count == 0){
+                    index.push_back(j);
+                    buffer.replace(j, 3, strChange);
+                //}
+                j += 3;
             }
-            step = 3;
+            qSort(index.begin(), index.end());
         }
 
-        //QMessageBox::information(0,"", QString(" i = %1\n").arg(i) +
-        //QString(" indexPoint = %1\n").arg(indexPoint) +
-        //QString(" Step = %1\n").arg(step) + buffer);
-
-
-        strFind.push_back(buffer[i]);
-        strFind.push_back(buffer[i+1]);
-        strFind.push_back(buffer[i+2]);
-
-        strChange.push_back(strFind[2]);
-        //char c = (strFind[1]/* + 1*/) ^ key;
-        strChange.push_back(strFind[1]/* ^ key*/);
-        strChange.push_back(strFind[0]);
-
-
-        int j = i;
-        //buffer.replace(j, 3, strChange);
-        while((j = buffer.indexOf(strFind, j)) != -1){
-
-            index.push_back(j);
-            buffer.replace(j, 3, strChange);
-            j += 3;
+        if (!f.open(QIODevice::WriteOnly)){
+            QMessageBox::critical(0, "Error", "Ошибка создания файла ключа!");
+            f.close();
+            return;
         }
 
+        QString test;
+
+        for(auto i:index){
+            test += QString::number(i) + " ";
+        }
+        QMessageBox::critical(0, "", "index = " + test);
+
+        QDataStream stream(&f);
+        stream << index;
+
+        if(stream.status() != QDataStream::Ok){
+            QMessageBox::critical(0, "Error", "Ошибка записи файла ключа!");
+            f.close();
+            return;
+        }
+
+        f.close();
+    }
+
+    if(!flag){
+
+        if (!f.open(QIODevice::ReadOnly)){
+            QMessageBox::critical(0, "Error", "Ошибка открытия файла ключа!");
+            f.close();
+            return;
+        }
+
+        QDataStream stream(&f);
+        stream >> index;
+
+        if(stream.status() != QDataStream::Ok){
+            QMessageBox::critical(0, "Error", "Ошибка чтения файла ключа!");
+            f.close();
+            return;
+        }
+
+        f.close();
+
+        char temp;
+        QString test;
+
+        for(auto i:index){
+            test += QString::number(i) + " ";
+        }
+        QMessageBox::critical(0, "", "index = " + test);
+
+        for(auto i:index){
+
+            temp = buffer[i];
+            buffer[i] = buffer[i+2];
+            buffer[i+2] = temp;
+        }
     }
 
 }
@@ -305,7 +391,7 @@ void Dialog::on_pushButton_Ok_clicked()
     }
 
     file.write(buffer);
-
+    //file.write();
     file.close();
     QMessageBox::information(0, "Information",
                              (mode)? "Файл успешно зашифрован !":"Файл успешно расшифрован !");
