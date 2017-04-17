@@ -24,7 +24,7 @@ private:
     void scrambler_xor();
     void simpleRep(bool);
     void omofChange(bool);
-    void blockChange(bool);
+    bool blockChange(bool);
 
 private slots:
     void on_toolButton_Load_clicked();

@@ -3,9 +3,11 @@
 #include "ui_dialog.h"
 #include "QFileDialog"
 #include "QMessageBox"
-//#include "QtAlgorithms"
-//#include "fstream"
-//#include "iostream"
+#include "QtAlgorithms"
+#include "iterator"
+#include "time.h"
+#include "fstream"
+#include "iostream"
 #include "QInputDialog"
 #include "smbios.h"
 
@@ -30,8 +32,8 @@ Dialog::Dialog(QWidget *parent) :
     connect(ui->checkBox, SIGNAL(clicked(bool)), this, SLOT(disableLineEditKey()));
     connect(ui->comboBox_scrambler, SIGNAL(currentIndexChanged(int)), this, SLOT(comboChange()));
 
-    ui->lineEdit_Load->setText("C:\\Users\\Rtp_9\\Desktop\\test_origin.txt");
-    ui->lineEdit_Save->setText("C:\\Users\\Rtp_9\\Desktop\\test1.txt");
+    ui->lineEdit_Load->setText("C:\\Users\\pav_a\\Desktop\\test1.txt");
+    ui->lineEdit_Save->setText("C:\\Users\\pav_a\\Desktop\\test3.txt");
 }
 
 Dialog::~Dialog()
@@ -129,27 +131,66 @@ void Dialog::simpleRep(bool flag)
 
 void Dialog::omofChange(bool flag)
 {
-    char temp;
+    //int mass_key[127][3];
+    QMultiMap<unsigned char, int> keyTable;
+    QVector<int> rnd;
 
-    if(flag){
+    srand(time(0));
+    int n = 0, ind = 0;
 
-        for(int i = 0; i < buffer.length(); i+= 2){
-            temp = (buffer[i] + 2) ^ key;
-            buffer[i] = temp;
-            temp = (buffer[i] - 4) ^ key;
-            buffer.insert(i + 1, temp);
+    for(int i = 33; i < 256; i++){
+
+        for(int j = 0; j < 3; j++){
+            ind = 0;
+            qCount(rnd, n, ind);
+            while(ind != 0){
+                ind = 0;
+                n = rand() % 900 + 10;
+                qCount(rnd, n, ind);
+            }
+            rnd.push_back(n);
+            keyTable.insert(i, n);
         }
     }
-    else{
 
-        for(int i = 0; i < buffer.length(); i++){
-            buffer[i] = (buffer[i] ^ key) - 2;
-            buffer.remove(i + 1, 1);
+//    QMultiMap<unsigned char, int>::iterator it = keyTable.begin();
+//    QString s;
+
+//    for(; it != keyTable.end(); ++it){
+//        s = s + "Key = " + it.key() + QString(" Value = %1").arg(it.value());
+//    }
+
+    //QMessageBox::information(0, "", s);
+    QMultiMap<unsigned char, int>::iterator it;
+
+    for(int i = 0; i < buffer.length(); i++){
+        it = keyTable.find(buffer[i]);
+        if(it != keyTable.end()){
+            buffer[i] = it.value();
         }
     }
+
+    //    char temp;
+
+    //    if(flag){
+
+    //        for(int i = 0; i < buffer.length(); i+= 2){
+    //            temp = (buffer[i] + 2) ^ key;
+    //            buffer[i] = temp;
+    //            temp = (buffer[i] - 4) ^ key;
+    //            buffer.insert(i + 1, temp);
+    //        }
+    //    }
+    //    else{
+
+    //        for(int i = 0; i < buffer.length(); i++){
+    //            buffer[i] = (buffer[i] ^ key) - 2;
+    //            buffer.remove(i + 1, 1);
+    //        }
+    //    }
 }
 
-void Dialog::blockChange(bool flag)
+bool Dialog::blockChange(bool flag)
 {
     QVector<int> index;
     int step = 3;
@@ -171,7 +212,6 @@ void Dialog::blockChange(bool flag)
     fileName_key.replace(j + 1, 3, "key");
 
     QFile f(fileName_key);
-    int ind = 0;
 
     if(flag){
 
@@ -180,32 +220,24 @@ void Dialog::blockChange(bool flag)
             strFind.clear();
             strChange.clear();
 
+            count = 0;
+            step = 3;
+            qCount(index, i, count);
 
-            //if(!index.isEmpty()){
+            if(count != 0){
+                continue;
+            }
 
-                count = 0;
-                qCount(index, i, count);
-
-                if(count){
-                    step = 3;
-                    continue;
+            for(auto k:index){
+                if(k > i){
+                    step = k - i;
+                    break;
                 }
+            }
 
-                for(auto k:index){
-
-                    if(k > i){
-                        ind = k;
-                        step = ind - i;
-                        break;
-                    }
-                }
-
-
-                if((step < 3) && (step > 0))
-                    continue;
-
-                step = 3;
-            //}
+            if(step < 3)
+                continue;
+            else step = 3;
 
             //   QMessageBox::information(0,"", QString(" i = %1\n").arg(i) +
             //   QString(" ind = %1\n").arg(ind) +
@@ -216,55 +248,63 @@ void Dialog::blockChange(bool flag)
             strFind.push_back(buffer[i+2]);
 
             strChange.push_back(strFind[2]);
-            strChange.push_back(strFind[1]);
+            strChange.push_back(strFind[1] ^ key);
             strChange.push_back(strFind[0]);
 
             int j = i;
 
             while((j = buffer.indexOf(strFind, j)) != -1){
-//                count = 0;
-//                qCount(index, j, count);
+                count = 0;
+                qCount(index, j, count);
+                qCount(index, j+1, count);
+                qCount(index, j+2, count);
+                qCount(index, j-1, count);
+                qCount(index, j-2, count);
 
-//                if(count == 0){
+                if(count == 0){
                     index.push_back(j);
                     buffer.replace(j, 3, strChange);
-                //}
+                }
+
                 j += 3;
             }
+
             qSort(index.begin(), index.end());
         }
 
         if (!f.open(QIODevice::WriteOnly)){
             QMessageBox::critical(0, "Error", "Ошибка создания файла ключа!");
-            f.close();
-            return;
+            return false;
         }
 
-        QString test;
-
-        for(auto i:index){
-            test += QString::number(i) + " ";
-        }
-        QMessageBox::critical(0, "", "index = " + test);
+        for(auto i : index)
+            i = i ^ index.length();
 
         QDataStream stream(&f);
         stream << index;
 
         if(stream.status() != QDataStream::Ok){
             QMessageBox::critical(0, "Error", "Ошибка записи файла ключа!");
-            f.close();
-            return;
+            return false;
         }
 
         f.close();
+        QMessageBox::information(0, "Information", "В каталог с зашифрованным файлом\n"
+                                                   "помещен файл ключей с расширением .key, \n"
+                                                   "необходимый для дешифрации данных.");
     }
 
     if(!flag){
 
+        if(!f.exists()){
+            QMessageBox::critical(0, "Error", "Отсутствует файл ключа, необходимый \n"
+                                              "для корректной дешифрации данных!");
+            return false;
+        }
+
         if (!f.open(QIODevice::ReadOnly)){
             QMessageBox::critical(0, "Error", "Ошибка открытия файла ключа!");
-            f.close();
-            return;
+            return false;
         }
 
         QDataStream stream(&f);
@@ -272,28 +312,24 @@ void Dialog::blockChange(bool flag)
 
         if(stream.status() != QDataStream::Ok){
             QMessageBox::critical(0, "Error", "Ошибка чтения файла ключа!");
-            f.close();
-            return;
+            return false;
         }
 
         f.close();
 
+        for(auto i : index)
+            i = i ^ index.length();
+
         char temp;
-        QString test;
 
         for(auto i:index){
-            test += QString::number(i) + " ";
-        }
-        QMessageBox::critical(0, "", "index = " + test);
-
-        for(auto i:index){
-
             temp = buffer[i];
             buffer[i] = buffer[i+2];
             buffer[i+2] = temp;
+            buffer[i+1] = buffer[i+1] ^ key;
         }
     }
-
+    return true;
 }
 
 void Dialog::on_toolButton_Load_clicked()
@@ -372,8 +408,6 @@ void Dialog::on_pushButton_Ok_clicked()
         return;
     }
 
-    //QMessageBox::warning(0,"Warning", QString("Key = %1").arg(key));
-
     if(mode_Scrambler == "Операция сложения по модулю 2"){
         scrambler_xor();
     }
@@ -387,11 +421,11 @@ void Dialog::on_pushButton_Ok_clicked()
     }
 
     if(mode_Scrambler == "Блочная замена (3х3)"){
-        blockChange(mode);
+        if(!blockChange(mode))
+            return;
     }
 
     file.write(buffer);
-    //file.write();
     file.close();
     QMessageBox::information(0, "Information",
                              (mode)? "Файл успешно зашифрован !":"Файл успешно расшифрован !");
