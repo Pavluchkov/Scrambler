@@ -3,12 +3,8 @@
 #include "ui_dialog.h"
 #include "QFileDialog"
 #include "QMessageBox"
-#include "QtAlgorithms"
-#include "iterator"
 #include "time.h"
-#include "fstream"
-#include "iostream"
-#include "QInputDialog"
+#include "QTextStream"
 #include "smbios.h"
 
 Dialog::Dialog(QWidget *parent) :
@@ -25,15 +21,15 @@ Dialog::Dialog(QWidget *parent) :
     testLicense();
     key = 0;
 
-    QRegExp rx("\\d{9}[0-9]");
+    QRegExp rx("[0-9]{8}");
     QValidator *validator = new QRegExpValidator(rx, this);
     ui->lineEdit_key->setValidator(validator);
 
     connect(ui->checkBox, SIGNAL(clicked(bool)), this, SLOT(disableLineEditKey()));
     connect(ui->comboBox_scrambler, SIGNAL(currentIndexChanged(int)), this, SLOT(comboChange()));
 
-    ui->lineEdit_Load->setText("C:\\Users\\pav_a\\Desktop\\test1.txt");
-    ui->lineEdit_Save->setText("C:\\Users\\pav_a\\Desktop\\test3.txt");
+    //ui->lineEdit_Load->setText("C:/Users/Rtp_9/Desktop/test1.txt");
+    //ui->lineEdit_Save->setText("C:/Users/Rtp_9/Desktop/test3.txt");
 }
 
 Dialog::~Dialog()
@@ -60,8 +56,9 @@ void Dialog::comboChange()
 {
     ui->checkBox->setChecked(false);
     ui->lineEdit_key->setText("");
+    ui->comboBox_mode->setCurrentIndex(0);
 
-    if(ui->comboBox_scrambler->currentIndex() > 0){
+    if(ui->comboBox_scrambler->currentIndex() > 1){
         ui->lineEdit_key->setDisabled(true);
     }
     else ui->lineEdit_key->setDisabled(false);
@@ -123,71 +120,199 @@ void Dialog::simpleRep(bool flag)
     for(int i = 0; i < buffer.length(); i++){
 
         if(flag){
-            buffer[i] = (buffer[i] + 5) ^ key;
+            buffer[i] = (buffer[i] + key -3) ^ key;
         }
-        else buffer[i] = (buffer[i] ^ key) - 5;
+        else buffer[i] = (buffer[i] ^ key) - key + 3;
     }
 }
 
-void Dialog::omofChange(bool flag)
+bool Dialog::omofChange(bool flag)
 {
-    //int mass_key[127][3];
-    QMultiMap<unsigned char, int> keyTable;
-    QVector<int> rnd;
+    QByteArray symbol;
+
+    //    QMultiMap<char, int> keyTable;
+    //    QMultiMap<char, int>::iterator it;
+    //    QVector<int> rnd;
+    //    int a[3];
 
     srand(time(0));
-    int n = 0, ind = 0;
 
-    for(int i = 33; i < 256; i++){
+    if(flag){
+        for(int i = 0, count = 0; i < buffer.length(); count = 0, i++){
 
-        for(int j = 0; j < 3; j++){
-            ind = 0;
-            qCount(rnd, n, ind);
-            while(ind != 0){
-                ind = 0;
-                n = rand() % 900 + 10;
-                qCount(rnd, n, ind);
+            qCount(symbol, buffer[i], count);
+
+            if(!count)
+                symbol.push_back(buffer[i]);
+        }
+
+        //        QString ss;
+
+        //        for(auto i : symbol)
+        //            ss = ss + i + " ";
+
+        //        QMessageBox::information(0, "", ss);
+
+        int n = 0;
+        int** rndValue = new int* [3];
+        QList<int> rndList;
+
+        for(int i = 0; i < 3; i++)
+            rndValue[i] = new int[symbol.length()];
+
+        for(int i = 0; i < 3; i++)
+
+            for(int j = 0; j < symbol.length(); j++){
+                n = rand() % (symbol.length() * 3 + 100) + 100;
+
+                while(rndList.indexOf(n) != -1){
+                    n = rand() % (symbol.length() * 3 + 100) + 100;
+                }
+
+                rndList.push_back(n);
+                rndValue[i][j] = n;
             }
-            rnd.push_back(n);
-            keyTable.insert(i, n);
+
+        //    QString s[3];
+        //    for(int i = 0; i < 3; i++){
+
+        //        for(int j = 0; j < symbol.length(); j++){
+        //            s[i] = s[i] + QString("%1 ").arg(rndValue[i][j]);
+        //        }
+        //    }
+
+        //    QMessageBox::information(0, "", s[0] + "\n" + s[1] + "\n" + s[2]);
+
+        n = 0;
+
+        for(int i = 0; i < buffer.length(); i++){
+            if((n = symbol.indexOf(buffer[i])) != -1){
+                buffer.remove(i, 1);
+                buffer.insert(i, QString::number(rndValue[rand() % 3][n]));
+                i += 2;
+            }
         }
-    }
 
-//    QMultiMap<unsigned char, int>::iterator it = keyTable.begin();
-//    QString s;
+        QString s[4];
 
-//    for(; it != keyTable.end(); ++it){
-//        s = s + "Key = " + it.key() + QString(" Value = %1").arg(it.value());
-//    }
+        for(auto i : symbol)
+            s[0] = s[0] + " " + i + "  ";
 
-    //QMessageBox::information(0, "", s);
-    QMultiMap<unsigned char, int>::iterator it;
+        for(int i = 0; i < 3; i++){
 
-    for(int i = 0; i < buffer.length(); i++){
-        it = keyTable.find(buffer[i]);
-        if(it != keyTable.end()){
-            buffer[i] = it.value();
+            for(int j = 0; j < symbol.length(); j++){
+                s[i+1] += QString("%1 ").arg(rndValue[i][j]);
+            }
+
+            s[i] += "\n";
         }
-    }
 
-    //    char temp;
+        QString fileName_key;
+
+        if(flag)
+            fileName_key = ui->lineEdit_Save->text();
+        else
+            fileName_key = ui->lineEdit_Load->text();
+
+        int j = 0;
+
+        j = fileName_key.indexOf(".", j);
+        fileName_key.replace(j + 1, 3, "key");
+
+        QFile f(fileName_key);
+
+        if (!f.open(QIODevice::WriteOnly)){
+            QMessageBox::critical(0, "Error", "Ошибка создания файла ключа!");
+            return false;
+        }
+
+        //    for(auto i : index)
+        //        i = i ^ index.length();
+
+        QTextStream stream(&f);
+
+        for(auto i : s)
+            stream << i;
+
+        if(stream.status() != QTextStream::Ok){
+            QMessageBox::critical(0, "Error", "Ошибка записи файла ключа!");
+            return false;
+        }
+
+        f.close();
+        QMessageBox::information(0, "Information", "В каталог с зашифрованным файлом\n"
+                                                   "помещен файл ключей с расширением .key, \n"
+                                                   "необходимый для дешифрации данных.");
+
+        for(int i = 0; i < 3; i++)  // Удаление динамического двумерного массива
+            delete []rndValue[i];
+    }
+    //    int n = 0;
 
     //    if(flag){
 
-    //        for(int i = 0; i < buffer.length(); i+= 2){
-    //            temp = (buffer[i] + 2) ^ key;
-    //            buffer[i] = temp;
-    //            temp = (buffer[i] - 4) ^ key;
-    //            buffer.insert(i + 1, temp);
+    //        for(int i = 0; i < buffer.length(); i++){
+    //            it = keyTable.find(buffer[i]);
+
+    //            if(it == keyTable.end()){
+
+    //                for(int j = 0; j < 3; j++){
+    //                    n = rand() % 900 + 100;
+
+    //                    while((it = keyTable.find(n)) != keyTable.end())
+    //                        n = rand() % 900 + 100;
+
+    //                    keyTable.insert(buffer[i], n);
+    //                }
+    //            }
     //        }
-    //    }
-    //    else{
+
+    //        int j = 0;
 
     //        for(int i = 0; i < buffer.length(); i++){
-    //            buffer[i] = (buffer[i] ^ key) - 2;
-    //            buffer.remove(i + 1, 1);
+    //            it = keyTable.find(buffer[i]);
+    //            j = 0;
+
+    //            while((it != keyTable.end()) && (it.key() == buffer[i])){
+    //                a[j] = it.value();
+    //                j++;
+    //                it++;
+    //            }
+
+    //            rnd.push_back(a[rand() % 3 + 0]);
+
+    //        }
+    //    QString s;
+
+    //    for(it = keyTable.begin(); it != keyTable.end(); it++)
+    //        s = s + it.key() + QString(" %1 ").arg(it.value());
+
+    //    QMessageBox::information(0, "", s);
+    //    s = "";
+    //    for(auto i : rnd){
+    //        s = s + QString("%1 ").arg(i);
+    //    }
+
+    //    QMessageBox::information(0, "", s);
+
+    //    QMultiMap<unsigned char, int>::iterator it = keyTable.begin();
+    //    QString s;
+
+    //    for(; it != keyTable.end(); ++it){
+    //        s = s + "Key = " + it.key() + QString(" Value = %1").arg(it.value());
+    //    }
+
+    //QMessageBox::information(0, "", s);
+    //        QMultiMap<unsigned char, int>::iterator it;
+
+    //        for(int i = 0; i < buffer.length(); i++){
+    //            it = keyTable.find(buffer[i]);
+    //            if(it != keyTable.end()){
+    //                buffer[i] = it.value();
+    //            }
     //        }
     //    }
+    return true;
 }
 
 bool Dialog::blockChange(bool flag)
@@ -379,7 +504,7 @@ void Dialog::on_pushButton_Ok_clicked()
     QString k = ui->lineEdit_key->text();
     int temp = ui->comboBox_scrambler->currentIndex();
 
-    if((k.isEmpty()) && (temp < 1)){
+    if((k.isEmpty()) && (temp < 2)){
         QMessageBox::warning(0,"Warning", "Введите ключ шифрования!");
         return;
     }
@@ -416,8 +541,9 @@ void Dialog::on_pushButton_Ok_clicked()
         simpleRep(mode);
     }
 
-    if(mode_Scrambler == "Омофонная замена (1х2)"){
-        omofChange(mode);
+    if(mode_Scrambler == "Омофонная замена (1х3)"){
+        if(!omofChange(mode))
+            return;
     }
 
     if(mode_Scrambler == "Блочная замена (3х3)"){

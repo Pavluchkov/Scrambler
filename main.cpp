@@ -2,6 +2,8 @@
 //#include "license.h"
 #include "windowlicense.h"
 #include "QMessageBox"
+#include "QTextCodec"
+//#include "QTextStreamFunction"
 #include <QApplication>
 
 int main(int argc, char *argv[])

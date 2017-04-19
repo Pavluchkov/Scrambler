@@ -23,7 +23,7 @@ private:
 
     void scrambler_xor();
     void simpleRep(bool);
-    void omofChange(bool);
+    bool omofChange(bool);
     bool blockChange(bool);
 
 private slots:
