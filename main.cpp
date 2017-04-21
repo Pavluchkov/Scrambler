@@ -1,13 +1,16 @@
 #include "dialog.h"
 //#include "license.h"
 #include "windowlicense.h"
+#include "Windows.h"
 #include "QMessageBox"
 #include "QTextCodec"
-//#include "QTextStreamFunction"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
+//    SetConsoleCP(1251);
+//    SetConsoleOutputCP(1251);
+
     QApplication a(argc, argv);
 
     QApplication::setOrganizationName("Scrambler");
