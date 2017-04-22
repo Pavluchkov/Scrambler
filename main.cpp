@@ -3,7 +3,6 @@
 #include "windowlicense.h"
 #include "Windows.h"
 #include "QMessageBox"
-#include "QTextCodec"
 #include <QApplication>
 
 int main(int argc, char *argv[])

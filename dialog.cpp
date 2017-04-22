@@ -5,6 +5,7 @@
 #include "QMessageBox"
 #include "time.h"
 #include "QTextStream"
+#include "QTextCodec"
 #include "smbios.h"
 
 Dialog::Dialog(QWidget *parent) :
@@ -87,10 +88,10 @@ void Dialog::testLicense()
         license->setValue("End", n);
 
         int a = QMessageBox::warning(0, "Warning",
-                                     "Вы используете Trial версию приложения!\n"
+                                     "  Вы используете Trial версию приложения!\n"
                                      "Срок действия пробного периода истекает\n"
-                                     "            через " + trialEnd.toString() + " запуска приложения!\n"
-                                                                                  "        Желаете ввести ключ лицензии?", QMessageBox::Yes | QMessageBox::No );
+                                     "через " + trialEnd.toString() + " запуск(а) приложения.\n\n"
+                                                                      "\tЖелаете ввести ключ лицензии?", QMessageBox::Yes | QMessageBox::No );
         if(a == QMessageBox::Yes)
             setLicense();
     }
@@ -163,13 +164,6 @@ bool Dialog::omofChange(bool flag)
             }
         }
 
-        //        QString ss;
-
-        //        for(auto i : symbol)
-        //            ss = ss + i + " ";
-
-        //        QMessageBox::information(0, "", ss);
-
         int n = 0;
         int** rndValue = new int* [3];
         QList<int> rndList;
@@ -190,16 +184,6 @@ bool Dialog::omofChange(bool flag)
                 rndValue[i][j] = n;
             }
 
-        //    QString s[3];
-        //    for(int i = 0; i < 3; i++){
-
-        //        for(int j = 0; j < symbol.length(); j++){
-        //            s[i] = s[i] + QString("%1 ").arg(rndValue[i][j]);
-        //        }
-        //    }
-
-        //    QMessageBox::information(0, "", s[0] + "\n" + s[1] + "\n" + s[2]);
-
         n = 0;
 
         for(int i = 0; i < buffer.length(); i++){
@@ -212,18 +196,15 @@ bool Dialog::omofChange(bool flag)
 
         QString s[4];
 
-        for(auto i : symbol){
+        for(auto i : symbol)
             s[0] += i;
-            //s[0] = s[0] + " " + i + "  ";
-        }
 
         for(int i = 0; i < 3; i++){
 
             for(int j = 0; j < symbol.length(); j++){
-                s[i+1] += QString("%1").arg(rndValue[i][j]);
+                s[i+1] += QString::number(rndValue[i][j]);
             }
 
-            //s[i] += "\n";
         }
 
         int j = 0;
@@ -233,7 +214,7 @@ bool Dialog::omofChange(bool flag)
 
         QFile f(fileName_key);
 
-        if (!f.open(QIODevice::WriteOnly)){
+        if (!f.open(QIODevice::WriteOnly | QIODevice::Text)){
             QMessageBox::critical(0, "Error", "Ошибка создания файла ключа!");
             return false;
         }
@@ -285,12 +266,11 @@ bool Dialog::omofChange(bool flag)
         j = 0;
 
         while(!f.atEnd() && j < 4){
-            str_temp = f.readLine();
-
-            for(auto i : str_temp)
-                volume[j] += i;
+            volume[j] = f.readLine();
             j++;
         }
+
+        f.close();
 
         int k = 0;
         str_temp.clear();
@@ -332,15 +312,8 @@ bool Dialog::omofChange(bool flag)
                 it++;
             }
         }
-        //        QString s;
-
-        //        for(auto i : buffer_new)
-        //            s = s + i;
-        //QMessageBox::information(0, "", s);
 
         buffer = buffer_new;
-
-        f.close();
     }
 
     return true;
@@ -394,10 +367,6 @@ bool Dialog::blockChange(bool flag)
             if(step < 3)
                 continue;
             else step = 3;
-
-            //   QMessageBox::information(0,"", QString(" i = %1\n").arg(i) +
-            //   QString(" ind = %1\n").arg(ind) +
-            //   QString(" Step = %1\n").arg(step) + QString(buffer).fromLocal8Bit(buffer));
 
             strFind.push_back(buffer[i]);
             strFind.push_back(buffer[i+1]);
