@@ -26,8 +26,8 @@ Dialog::Dialog(QWidget *parent) :
     QValidator *validator = new QRegExpValidator(rx, this);
     ui->lineEdit_key->setValidator(validator);
 
-    ui->checkBox->setToolTip(" Если этот параметр включен, то ключ шифрования\n"
-                             "генерируется под конкретную машину, исключая тем самым\n"
+    ui->checkBox->setToolTip("Если этот параметр включен, то ключ шифрования\n"
+                             "генерируется под конкретную машину, исключая тем самым \n"
                              "несанкционированную расшифровку файла на другом ПК.");
 
     ui->lineEdit_key->setToolTip("Ключ шифрования должен содержать\n"
@@ -87,11 +87,11 @@ void Dialog::testLicense()
         int n = trialEnd.toInt() - 1;
         license->setValue("End", n);
 
-        int a = QMessageBox::warning(0, "Warning",
-                                     "  Вы используете Trial версию приложения!\n"
-                                     "Срок действия пробного периода истекает\n"
-                                     "через " + trialEnd.toString() + " запуск(а) приложения.\n\n"
-                                                                      "\tЖелаете ввести ключ лицензии?", QMessageBox::Yes | QMessageBox::No );
+        int a = QMessageBox::warning(0, "Warning", "<p align=""center""><b>Внимание!</b></p>"
+                                     "<p align=""center"">Вы используете Trial версию приложения."
+                                     "Срок действия пробного периода истекает через "
+                                     + trialEnd.toString() + " запуск(а) приложения.</p>"
+                                     "<p align=""center"">Желаете ввести ключ лицензии?</p>", QMessageBox::Yes | QMessageBox::No );
         if(a == QMessageBox::Yes)
             setLicense();
     }
@@ -148,20 +148,20 @@ bool Dialog::omofChange(bool flag)
     if(flag){
         QByteArray symbol;
 
-        for(int i = 0; i < buffer.length(); i++){
-            if(buffer[i] == '\r')
-                buffer.remove(i, 1);
-            if(buffer[i] == '\n')
-                buffer[i] = '\0';
-        }
-
         for(int i = 0, count = 0; i < buffer.length(); count = 0, i++){
+
+            if(buffer[i] == '\r')
+                    buffer.remove(i, 1);
+
+               if(buffer[i] == '\n')
+                    buffer[i] = '\0';
 
             qCount(symbol, buffer[i], count);
 
             if(!count){
                 symbol.push_back(buffer[i]);
             }
+
         }
 
         int n = 0;
@@ -194,7 +194,7 @@ bool Dialog::omofChange(bool flag)
             }
         }
 
-        QString s[4];
+        QByteArray s[4];
 
         for(auto i : symbol)
             s[0] += i;
@@ -219,21 +219,13 @@ bool Dialog::omofChange(bool flag)
             return false;
         }
 
-        QTextStream stream(&f);
-
-        for(auto i : s){
-            stream << i + '\n';
-        }
-
-        if(stream.status() != QTextStream::Ok){
-            QMessageBox::critical(0, "Error", "Ошибка записи файла ключа!");
-            return false;
-        }
+        for(auto i : s)
+            f.write(i + '\n');
 
         f.close();
-        QMessageBox::information(0, "Information", "В каталог с зашифрованным файлом\n"
-                                                   "помещен файл ключей с расширением .key, \n"
-                                                   "необходимый для дешифрации данных.");
+        QMessageBox::information(0, "Information", "<p align=""center"">В каталог с зашифрованным файлом"
+                                                   " помещен файл ключей с расширением <b>.key</b>, "
+                                                   "необходимый для дешифрации данных.</p>");
 
         for(int i = 0; i < 3; i++)  // Удаление динамического двумерного массива
             delete []rndValue[i];
@@ -248,8 +240,8 @@ bool Dialog::omofChange(bool flag)
         QFile f(fileName_key);
 
         if(!f.exists()){
-            QMessageBox::critical(0, "Error", "Отсутствует файл ключа, необходимый \n"
-                                              "для корректной дешифрации данных!");
+            QMessageBox::critical(0, "Error", "Отсутствует файл <b>ключа</b>, необходимый \n"
+                                              "для <b>корректной</b> дешифрации данных!");
             return false;
         }
 
@@ -273,7 +265,6 @@ bool Dialog::omofChange(bool flag)
         f.close();
 
         int k = 0;
-        str_temp.clear();
 
         for(int i = 0; i < volume[0].length(); i++){
             for(int j = 1; j < 4; j++){
@@ -287,7 +278,6 @@ bool Dialog::omofChange(bool flag)
             k += 3;
         }
 
-        str_temp.clear();
         QByteArray buffer_new;
         int hvost = buffer.length() % 3;
 
@@ -414,16 +404,16 @@ bool Dialog::blockChange(bool flag)
         }
 
         f.close();
-        QMessageBox::information(0, "Information", "В каталог с зашифрованным файлом\n"
-                                                   "помещен файл ключей с расширением .key, \n"
-                                                   "необходимый для дешифрации данных.");
+        QMessageBox::information(0, "Information", "<p align=""center"">В каталог с зашифрованным файлом"
+                                                   " помещен файл ключей с расширением <b>.key</b>, "
+                                                   "необходимый для дешифрации данных.</p>");
     }
 
     if(!flag){
 
         if(!f.exists()){
-            QMessageBox::critical(0, "Error", "Отсутствует файл ключа, необходимый \n"
-                                              "для корректной дешифрации данных!");
+            QMessageBox::critical(0, "Error", "<p align=""center"">Отсутствует файл ключа, необходимый"
+                                              "для корректной дешифрации данных!</p>");
             return false;
         }
 
@@ -487,17 +477,17 @@ void Dialog::on_pushButton_Ok_clicked()
 
     if(ui->lineEdit_Load->text().isEmpty()){
         QMessageBox::warning(0, "Warning",
-                             (mode)? "Укажите шифруемый файл!":"Укажите дешифруемый файл!");
+                             (mode)? "Укажите <b>шифруемый</b> файл!":"Укажите дешифруемый файл!");
         return;
     }
 
     if(ui->lineEdit_Save->text().isEmpty()){
-        QMessageBox::warning(0,"Warning", "Укажите выходной файл!");
+        QMessageBox::warning(0,"Warning", "Укажите <b>выходной</b> файл!");
         return;
     }
 
     if(ui->lineEdit_Load->text() == ui->lineEdit_Save->text()){
-        QMessageBox::warning(0, "Warning", "Входной и выходной файл совпадают.");
+        QMessageBox::warning(0, "Warning", "<b>Входной</b> и <b>выходной</b> файл совпадают.");
         return;
     }
 
@@ -505,7 +495,7 @@ void Dialog::on_pushButton_Ok_clicked()
     int temp = ui->comboBox_scrambler->currentIndex();
 
     if((k.isEmpty()) && (temp < 2)){
-        QMessageBox::warning(0,"Warning", "Введите ключ шифрования!");
+        QMessageBox::warning(0,"Warning", "Введите <b>ключ</b> шифрования!");
         return;
     }
 
