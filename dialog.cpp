@@ -89,8 +89,8 @@ void Dialog::testLicense()
 
         int a = QMessageBox::warning(0, "Warning", "<p align=""center""><b>Внимание!</b></p>"
                                      "<p align=""center"">Вы используете Trial версию приложения."
-                                     "Срок действия пробного периода истекает через "
-                                     + trialEnd.toString() + " запуск(а) приложения.</p>"
+                                     "Срок действия пробного периода истекает через <b>"
+                                     + trialEnd.toString() + " </b>запуск(а) приложения.</p>"
                                      "<p align=""center"">Желаете ввести ключ лицензии?</p>", QMessageBox::Yes | QMessageBox::No );
         if(a == QMessageBox::Yes)
             setLicense();
