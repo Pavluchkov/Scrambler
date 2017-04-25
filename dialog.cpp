@@ -87,11 +87,11 @@ void Dialog::testLicense()
         int n = trialEnd.toInt() - 1;
         license->setValue("End", n);
 
-        int a = QMessageBox::warning(0, "Warning", "<p align=""center""><b>Внимание!</b></p>"
-                                     "<p align=""center"">Вы используете Trial версию приложения."
-                                     "Срок действия пробного периода истекает через <b>"
+        int a = QMessageBox::warning(0, "Warning", "<p align=""center""><h1>Внимание!</h1></p>"
+                                                   "<p align=""center"">Вы используете Trial версию приложения."
+                                                   "Срок действия пробного периода истекает через <b>"
                                      + trialEnd.toString() + " </b>запуск(а) приложения.</p>"
-                                     "<p align=""center"">Желаете ввести ключ лицензии?</p>", QMessageBox::Yes | QMessageBox::No );
+                                                             "<p align=""center"">Желаете ввести ключ лицензии?</p>", QMessageBox::Yes | QMessageBox::No );
         if(a == QMessageBox::Yes)
             setLicense();
     }
@@ -151,10 +151,10 @@ bool Dialog::omofChange(bool flag)
         for(int i = 0, count = 0; i < buffer.length(); count = 0, i++){
 
             if(buffer[i] == '\r')
-                    buffer.remove(i, 1);
+                buffer.remove(i, 1);
 
-               if(buffer[i] == '\n')
-                    buffer[i] = '\0';
+            if(buffer[i] == '\n')
+                buffer[i] = '\0';
 
             qCount(symbol, buffer[i], count);
 
@@ -219,6 +219,9 @@ bool Dialog::omofChange(bool flag)
             return false;
         }
 
+        for(int i = 0; i < s[0].length(); i++)
+            s[0][i] = s[0][i] + key;
+
         for(auto i : s)
             f.write(i + '\n');
 
@@ -232,6 +235,7 @@ bool Dialog::omofChange(bool flag)
     }
 
     if(!flag){
+
         int j = 0;
 
         j = fileName_key.indexOf(".", j);
@@ -263,6 +267,9 @@ bool Dialog::omofChange(bool flag)
         }
 
         f.close();
+
+        for(int i = 0; i < volume[0].length(); i++)
+            volume[0][i] = volume[0][i] - key;
 
         int k = 0;
 
@@ -477,7 +484,7 @@ void Dialog::on_pushButton_Ok_clicked()
 
     if(ui->lineEdit_Load->text().isEmpty()){
         QMessageBox::warning(0, "Warning",
-                             (mode)? "Укажите <b>шифруемый</b> файл!":"Укажите дешифруемый файл!");
+                             (mode)? "Укажите <b>шифруемый</b> файл!":"Укажите <b>дешифруемый файл!</b>");
         return;
     }
 
@@ -506,6 +513,14 @@ void Dialog::on_pushButton_Ok_clicked()
 
     QString fileName = ui->lineEdit_Load->text();
     QFile file(fileName);
+
+    if(!file.exists()){
+        QMessageBox::critical(0, "Error", (mode)? "<p align=""center"">Укажите корректное имя <b>шифруемого</b> файла. "
+                                                  "Указанного вами файла не существует !</p>" :
+                                                  "<p align=""center"">Укажите корректное имя <b>дешифруемого</b> файла. "
+                                                  "Указанного вами файла не существует !</p>");
+        return;
+    }
 
     if (!file.open(QIODevice::ReadOnly)){
         QMessageBox::critical(0, "Error", "Ошибка открытия файла !");
