@@ -5,7 +5,6 @@
 #include "QMessageBox"
 #include "time.h"
 #include "QTextStream"
-#include "QTextCodec"
 #include "smbios.h"
 
 Dialog::Dialog(QWidget *parent) :
@@ -36,8 +35,8 @@ Dialog::Dialog(QWidget *parent) :
     connect(ui->checkBox, SIGNAL(clicked(bool)), this, SLOT(disableLineEditKey()));
     connect(ui->comboBox_scrambler, SIGNAL(currentIndexChanged(int)), this, SLOT(comboChange()));
 
-    ui->lineEdit_Load->setText("C:\\Users\\pav_a\\Desktop\\test1.txt");
-    ui->lineEdit_Save->setText("C:\\Users\\pav_a\\Desktop\\test2.txt");
+    //ui->lineEdit_Load->setText("C:\\Users\\pav_a\\Desktop\\test1.txt");
+    //ui->lineEdit_Save->setText("C:\\Users\\pav_a\\Desktop\\test2.txt");
 }
 
 Dialog::~Dialog()
@@ -64,7 +63,6 @@ void Dialog::comboChange()
 {
     ui->checkBox->setChecked(false);
     ui->lineEdit_key->setText("");
-    //ui->comboBox_mode->setCurrentIndex(0);
 
     if(ui->comboBox_scrambler->currentIndex() > 1){
         ui->lineEdit_key->setDisabled(true);
@@ -244,8 +242,8 @@ bool Dialog::omofChange(bool flag)
         QFile f(fileName_key);
 
         if(!f.exists()){
-            QMessageBox::critical(0, "Error", "Отсутствует файл <b>ключа</b>, необходимый \n"
-                                              "для <b>корректной</b> дешифрации данных!");
+            QMessageBox::critical(0, "Error", "<p align=""center""><b>Отсутствует файл ключа</b>, необходимый</p>"
+                                              "<p align=""center"">для корректной дешифрации данных!</p>");
             return false;
         }
 
@@ -419,8 +417,8 @@ bool Dialog::blockChange(bool flag)
     if(!flag){
 
         if(!f.exists()){
-            QMessageBox::critical(0, "Error", "<p align=""center"">Отсутствует файл ключа, необходимый"
-                                              "для корректной дешифрации данных!</p>");
+            QMessageBox::critical(0, "Error", "<p align=""center""><b>Отсутствует файл ключа</b>, необходимый</p>"
+                                              "<p align=""center"">для корректной дешифрации данных!</p>");
             return false;
         }
 
@@ -476,6 +474,8 @@ void Dialog::on_pushButton_Ok_clicked()
 
     QString m = ui->comboBox_mode->currentText();
     QString mode_Scrambler = ui->comboBox_scrambler->currentText();
+    QString fileName = ui->lineEdit_Load->text();
+    QFile file(fileName);
     SMBios smbiosInfo;
     bool mode = false;
 
@@ -484,7 +484,15 @@ void Dialog::on_pushButton_Ok_clicked()
 
     if(ui->lineEdit_Load->text().isEmpty()){
         QMessageBox::warning(0, "Warning",
-                             (mode)? "Укажите <b>шифруемый</b> файл!":"Укажите <b>дешифруемый файл!</b>");
+                             (mode)? "Укажите <b>шифруемый</b> файл!":"Укажите <b>дешифруемый</b> файл!");
+        return;
+    }
+
+    if(!file.exists()){
+        QMessageBox::critical(0, "Error", (mode)? "<p align=""center"">Укажите корректное имя <b>шифруемого</b> файла.</p>"
+                                                  "<p align=""center"">Указанного вами файла не существует !</p>" :
+                                                  "<p align=""center"">Укажите корректное имя <b>дешифруемого</b> файла.</p>"
+                                                  "<p align=""center"">Указанного вами файла не существует !</p>");
         return;
     }
 
@@ -511,17 +519,6 @@ void Dialog::on_pushButton_Ok_clicked()
     else
         key = k.toLongLong();
 
-    QString fileName = ui->lineEdit_Load->text();
-    QFile file(fileName);
-
-    if(!file.exists()){
-        QMessageBox::critical(0, "Error", (mode)? "<p align=""center"">Укажите корректное имя <b>шифруемого</b> файла. "
-                                                  "Указанного вами файла не существует !</p>" :
-                                                  "<p align=""center"">Укажите корректное имя <b>дешифруемого</b> файла. "
-                                                  "Указанного вами файла не существует !</p>");
-        return;
-    }
-
     if (!file.open(QIODevice::ReadOnly)){
         QMessageBox::critical(0, "Error", "Ошибка открытия файла !");
         return;
@@ -529,14 +526,6 @@ void Dialog::on_pushButton_Ok_clicked()
 
     buffer = file.readAll();
     file.close();
-
-    fileName = ui->lineEdit_Save->text();
-    file.setFileName(fileName);
-
-    if (!file.open(QIODevice::WriteOnly)){
-        QMessageBox::critical(0, "Error", "Ошибка создания файла !");
-        return;
-    }
 
     if(mode_Scrambler == "Операция сложения по модулю 2"){
         scrambler_xor();
@@ -554,6 +543,14 @@ void Dialog::on_pushButton_Ok_clicked()
     if(mode_Scrambler == "Блочная замена (3х3)"){
         if(!blockChange(mode))
             return;
+    }
+
+    fileName = ui->lineEdit_Save->text();
+    file.setFileName(fileName);
+
+    if (!file.open(QIODevice::WriteOnly)){
+        QMessageBox::critical(0, "Error", "Ошибка создания файла !");
+        return;
     }
 
     file.write(buffer);

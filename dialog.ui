@@ -10,8 +10,11 @@
     <height>231</height>
    </rect>
   </property>
+  <property name="mouseTracking">
+   <bool>false</bool>
+  </property>
   <property name="windowTitle">
-   <string>Лабораторные работы 9, 10, 11</string>
+   <string>Scrambler</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>

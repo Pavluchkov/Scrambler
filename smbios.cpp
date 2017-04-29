@@ -23,7 +23,7 @@ const wchar_t* LocateStringW (const char* str, UINT i)
     static wchar_t buff[2048];
     const char *pStr = LocateStringA (str, i);
     SecureZeroMemory (buff, sizeof (buff));
-    MultiByteToWideChar (CP_OEMCP, 0, pStr, strlen (pStr), buff, sizeof (buff));
+    MultiByteToWideChar (CP_OEMCP, 0, pStr, (int)strlen (pStr), buff, sizeof (buff));
 
     return buff;
 }
